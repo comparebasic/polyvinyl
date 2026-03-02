@@ -1,0 +1,15 @@
+{
+    "dest": "example/public",
+    "inc-dir": "example/template",
+    "content": "example/content",
+    "inc":[
+        "header.format",
+        "nav.format",
+        "footer.html"
+    ],
+    "pages":[
+        "main",
+        "one",
+        "two"
+    ]
+}
