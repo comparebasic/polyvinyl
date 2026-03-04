@@ -12,24 +12,17 @@
         ]
     },
     "template-pages":{
-        "project-a": "project"
     },
     "pages":{
-        "main": "main.html",
-        "one": "one.html",
-        "two": "two.html",
-        "project-a": ["project-a.html", "project-a-conclusion.html", "http://someothersite.com/projectA"]
+        "home": "index.format",
+        "cv": "cv.format"
     },
     "titles": {
-        "main": "Home Page",
-        "one": "First Page",
-        "two": "Second Page",
-        "project-a": "Project A"
+        "home": "Home Page",
+        "cv": "Curriculum Vitae"
     },
     "nav":{ 
-        "Home": "main",
-        "One": "one",
-        "Two": "two",
-        "Project A": "project-a"
+        "Home": "home",
+        "CV": "cv"
     }
 }
