@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import sys, os, json
 
+def nav(pages, coord):
+    pass
+
 def loadTemplate(data, name):
     if not data.get("templates"):
         data["templates"] = {}
@@ -11,7 +14,6 @@ def loadTemplate(data, name):
         data["templates"][name] = file.read()
 
 def config(fname):
-    print(fname)
     with open(fname, "r") as f:
         data = json.loads(f.read())
         print(data)
@@ -19,6 +21,9 @@ def config(fname):
             loadTemplate(data, t)
             
     return data
+
+def page(data, name):
+    pass
 
 def build(data):
     print(data)
