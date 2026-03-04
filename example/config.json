@@ -15,7 +15,7 @@
         "project-a": "project"
     },
     "pages":{
-        "main": "main.html",
+        "main": "main.format",
         "one": "one.html",
         "two": "two.html",
         "project-a": ["project-a.html", "project-a-conclusion.html", "http://someothersite.com/projectA"]
