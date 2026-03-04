@@ -27,14 +27,24 @@ class Ident(object):
         return "Ident<{}@{}/{} {}>".format(self.tag, self.source, self.idx, self.ext) 
 
 
+def getPath(config, source):
+    if isinstance(source, (list)):
+        return source[0]
+    else:
+        return source
+
+
 def getFrame(url):
     return "<iframe src=\"{}\"></iframe>".format(url)
 
 def nav(config, coord):
     content = ["<nav>\n    <ul>\n"]
     for k,v in config["nav"].items():
-        content.append("<li><a href=\"{}\">{}</a></li>\n".format(k, v))
+        path = getPath(config, config["pages"][v])
+        print(path)
+        content.append("<li><a href=\"{}\">{}</a></li>\n".format(path, k))
     content.append("    </ul>\n</nav>\n")
+    return "".join(content)
 
 
 def cache(config, ident):
@@ -63,8 +73,8 @@ def cache(config, ident):
                 file = open(path, "r")
                 content = config["templates-cache"][name] = file.read()
 
-
     return content
+
 
 def genConfig(fname):
     with open(fname, "r") as f:
@@ -74,11 +84,9 @@ def page(config, key, name):
     print("Generating {}".format(key))
     page = config["pages"][key]
     config["_current-page"] = config["pages"][key]
-    if isinstance(name, (list)):
-        fname = os.path.join(config["dest"], name[0])
-    else:
-        fname = os.path.join(config["dest"], name)
 
+    path = getPath(config, name)
+    fname = os.path.join(config["dest"], path)
     f = open(fname, "w+")
 
     template = config["template-pages"].get(key)
@@ -87,13 +95,10 @@ def page(config, key, name):
     else:
         template = config["templates"][template]
 
-
     data = {}
-    print(template)
     for i, h in enumerate(template):
         data["title"] = config["titles"][key]
         ident = Ident(h)
-        print(ident)
         if ident.tag == "nav":
             data["nav"] = nav(config, [i])
 
@@ -107,7 +112,6 @@ def page(config, key, name):
 
 
 def build(config):
-    print(config)
     for k,v in config["pages"].items():
         page(config, k, v)
 
