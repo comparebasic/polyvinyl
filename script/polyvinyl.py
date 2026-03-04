@@ -74,6 +74,12 @@ def page(config, key, name):
     print("Generating {}".format(key))
     page = config["pages"][key]
     config["_current-page"] = config["pages"][key]
+    if isinstance(name, (list)):
+        fname = os.path.join(config["dest"], name[0])
+    else:
+        fname = os.path.join(config["dest"], name)
+
+    f = open(fname, "w+")
 
     template = config["template-pages"].get(key)
     if not template:
@@ -81,8 +87,6 @@ def page(config, key, name):
     else:
         template = config["templates"][template]
 
-    fname = os.path.join(config["dest"], name)
-    f = open(fname, "w+")
 
     data = {}
     print(template)
