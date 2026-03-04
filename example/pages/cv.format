@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="styles.css">
     </head>
         {nav}
-    <body>
+    <body id="cv-page">
         <h1>Curriculum Vitae</h1>
         <h2>Experience</h2>
         <p>Professional armpit sniffer with five years of experience.</p>

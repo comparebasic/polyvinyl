@@ -7,6 +7,16 @@ header {
   text-align: right;
 }
 
+header li, header ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+header li {
+    display: inline-block;
+}
+
 p {
   color: #000000;
 }
@@ -21,33 +31,40 @@ a:hover {
 }
 
 section {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: table;
+  border-collapse: collapse;
+  width: 100%;
+  min-height: 100vh;
 }
 
 #leftcol {
-  flex: 1;
+  display: table-cell;
   margin-right: 10px;
   background-color: black;
   color:azure;
+  word-break: break-all;
 }
 
 #aboutme {
-  flex: 2;
+  width: 800px;
+  padding: 12px;
 }
 
 #rightcol {
-  flex: 1;
+  display: table-cell;
   margin-left: 10px;
   background-color: black;
   color:azure;
+  word-break: break-all;
 }
 
 #thinginside1 {
-  flex-wrap: wrap;
+
 }
 
 #thinginside2 {
-  flex-wrap: wrap;   
+  display: table-cell;
 }
+
+/* cv styles here */
+#cv-page {}
