@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>PolyVinyl Example - Second Page</title>
+    <meta property="og:title" content="PolyVinyl Example" />
+    <meta property="og:description" content="An example site for website composition"/>
+    <meta property="og:image" content="logo.png" />
+    <link rel="stylesheet" href="/style.css" />
+      <meta 
+        name="viewport"
+        content="width=device-width,initial-scale=1.0,user-scalable=yes,shrink-to-fit=no"
+      />
+</head>
+<body>
+<header>
+    None
+</header>
+<h1>Two</h1>
+<p>Except for two... when I lose my keys, and my coffee spills, and my love is living with someone else...</p>
+<footer></footer>
+</body>
+</html>

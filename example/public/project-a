@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>PolyVinyl Example - Project A</title>
+    <meta property="og:title" content="PolyVinyl Example" />
+    <meta property="og:description" content="An example site for website composition"/>
+    <meta property="og:image" content="logo.png" />
+    <link rel="stylesheet" href="/style.css" />
+      <meta 
+        name="viewport"
+        content="width=device-width,initial-scale=1.0,user-scalable=yes,shrink-to-fit=no"
+      />
+</head>
+<body>
+<header>
+    None
+</header>
+<h1>Project Alpha MasterBlaster</h1>
+<p>What a blaster-tastic project this was, so alpha!!!</p>
+<iframe src="http://someothersite.com/projectA"></iframe><h2>Conclusion</h2>
+<p>In the end it was all just a hill of beans :(</p>
+<footer></footer>
+</body>
+</html>

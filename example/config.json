@@ -1,15 +1,35 @@
 {
     "dest": "example/public",
-    "inc-dir": "example/template",
-    "content": "example/content",
-    "inc":[
-        "header.format",
-        "nav.format",
-        "footer.html"
-    ],
-    "pages":[
-        "main",
-        "one",
-        "two"
-    ]
+    "inc-dir": "example/inc",
+    "content-dir": "example/pages",
+    "templates":{
+        "default": [
+            "nav", "inc@header.format", "page", "inc@footer.html"
+        ],
+        "project": [
+            "nav", "inc@header.format", "page@0", "page@2", "page@1",
+            "inc@footer.html"
+        ]
+    },
+    "template-pages":{
+        "project-a": "project"
+    },
+    "pages":{
+        "main": "main.html",
+        "one": "one.html",
+        "two": "two.html",
+        "project-a": ["project-a.html", "project-a-conclusion.html", "http://someothersite.com/projectA"]
+    },
+    "titles": {
+        "main": "Home Page",
+        "one": "First Page",
+        "two": "Second Page",
+        "project-a": "Project A"
+    },
+    "nav":{ 
+        "Home": "main",
+        "One": "one",
+        "Two": "two",
+        "Project A": "project-a"
+    }
 }
