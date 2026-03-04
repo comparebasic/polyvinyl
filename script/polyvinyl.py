@@ -41,7 +41,6 @@ def nav(config, coord):
     content = ["<nav>\n    <ul>\n"]
     for k,v in config["nav"].items():
         path = getPath(config, config["pages"][v])
-        print(path)
         content.append("<li><a href=\"{}\">{}</a></li>\n".format(path, k))
     content.append("    </ul>\n</nav>\n")
     return "".join(content)
