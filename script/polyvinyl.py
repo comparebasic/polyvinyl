@@ -29,9 +29,12 @@ class Ident(object):
 
 def getPath(config, source):
     if isinstance(source, (list)):
-        return source[0]
-    else:
-        return source
+        source =  source[0]
+
+    if source.endswith("format"):
+        source = source.replace("format", "html")
+
+    return source
 
 
 def getFrame(url):
@@ -41,7 +44,6 @@ def nav(config, coord):
     content = ["<nav>\n    <ul>\n"]
     for k,v in config["nav"].items():
         path = getPath(config, config["pages"][v])
-        print(path)
         content.append("<li><a href=\"{}\">{}</a></li>\n".format(path, k))
     content.append("    </ul>\n</nav>\n")
     return "".join(content)
@@ -73,7 +75,10 @@ def cache(config, ident):
                 file = open(path, "r")
                 content = config["templates-cache"][name] = file.read()
 
-    return content
+            contentIdent = Ident("page@{}".format(name))
+            return contentIdent, content
+
+    return ident, content
 
 
 def genConfig(fname):
@@ -87,6 +92,7 @@ def page(config, key, name):
 
     path = getPath(config, name)
     fname = os.path.join(config["dest"], path)
+    print(fname)
     f = open(fname, "w+")
 
     template = config["template-pages"].get(key)
@@ -103,8 +109,9 @@ def page(config, key, name):
             data["nav"] = nav(config, [i])
 
         if ident.tag == "inc" or ident.tag == "page":
-            content = cache(config, ident)
-            if ident.ext == "format":
+            contentIdent, content = cache(config, ident)
+            print("contentIdent {}".format(contentIdent))
+            if contentIdent.ext == "format":
                 f.write(content.format(**data))
             else:
                 f.write(content)

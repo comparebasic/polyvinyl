@@ -1,37 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+  <meta charset="utf-8" />
+  <title>PolyVinyl Example - Home Page</title>
+  <meta property="og:title" content="PolyVinyl Example" />
+  <meta property="og:description" content="An example site for website composition"/>
+  <meta property="og:image" content="logo.png" />
+  <link rel="stylesheet" href="/style.css" />
+    <meta 
+     name="viewport"
+     content="width=device-width,initial-scale=1.0,user-scalable=yes,shrink-to-fit=no"
+    />
+  <head>
     <title>I Love You</title>
-    <meta property="og:title" content="PolyVinyl Example" />
-    <meta property="og:description" content="An example site for website composition"/>
-    <meta property="og:image" content="logo.png" />
-    <link rel="stylesheet" href="styles.css" />
-      <meta 
-        name="viewport"
-        content="width=device-width,initial-scale=1.0,user-scalable=yes,shrink-to-fit=no"
-      />
+    <link rel="stylesheet" href="styles.css">
+  </head>
+</head>
 <body>
+<header>
+  <nav>
+    <ul>
+<li><a href="index.format">Home</a></li>
+<li><a href="cv.format">CV</a></li>
+    </ul>
+</nav>
 
-        <section>
-            <div id="leftcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
-            </div>
-            <div id="aboutme">
-
-                <header id="landing-page-header">
-                    {nav}
-                </header>
-
-                <h1>About Me</h1>
-                <p>I am a man.</p>
-                <a href="obviousscam.html">Click this for free money (not a scam)</a>
-            </div>
-            <div id="rightcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
-            </div>
-        </section>
-    </body>
+</header>
+<section>
+  <div id="leftcol">
+    ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
+  </div>
+  <div id="aboutme">
+    <header id="landing-page-header">
+      {nav}
+    </header>
+    <h1>About Me</h1>
+    <p>I am a man.</p>
+    <a href="obviousscam.html">Click this for free money (not a scam)</a>
+    </div>
+    <div id="rightcol">
+      ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
+    </div>
+    </section>
+  </body>
 </html><footer></footer>
 </body>
 </html>

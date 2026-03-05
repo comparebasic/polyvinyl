@@ -18,16 +18,16 @@ header li {
 }
 
 p {
-  color: #000000;
+  color: black;
 }
 
 a {
   text-decoration: none;
-  color: rgb(0, 0, 0);
+  color: black;
 }
 
 a:hover {
-  color: rgb(208, 0, 255);
+  color: magenta;
 }
 
 section {
@@ -38,23 +38,27 @@ section {
 }
 
 #leftcol {
+  width: 25%;
   display: table-cell;
+  letter-spacing: 0px;
+  font-size: 32px;
   margin-right: 10px;
   background-color: black;
-  color:azure;
+  color: white;
   word-break: break-all;
 }
 
 #aboutme {
-  width: 800px;
   padding: 12px;
 }
 
 #rightcol {
+  width: 25%;
   display: table-cell;
+  font-size: 32px;
   margin-left: 10px;
   background-color: black;
-  color:azure;
+  color: white;
   word-break: break-all;
 }
 

@@ -1,21 +1,22 @@
-
-        <section>
-            <div id="leftcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
-            </div>
-            <div id="aboutme">
-
-                <header id="landing-page-header">
-                    {nav}
-                </header>
-
-                <h1>About Me</h1>
-                <p>I am a man.</p>
-                <a href="obviousscam.html">Click this for free money (not a scam)</a>
-            </div>
-            <div id="rightcol">
-                ANVJAOECJAISDHCIAEHFAIWEFJAODVHAIHFNAODFHAIWEFHAOWDJFAOWEFHAWIEHFAWDF
-            </div>
-        </section>
-    </body>
+<section>
+  <div id="leftcol"></div>
+  <div id="aboutme">
+    <header id="landing-page-header">
+      {nav}
+      <hr>
+    </header>
+    <h1>
+      About Me
+    </h1>
+    <p>
+      I am a man.
+    </p>
+    <a href="dumpers.html">
+      Click here to learn about dump trucks.
+    </a>
+    </div>
+    <div id="rightcol"></div>
+    </section>
+  </body>
+  <script src="banner.js" defer></script>
 </html>

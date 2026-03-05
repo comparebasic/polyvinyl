@@ -1,17 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Curriculum Vitae</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-        {nav}
-    <body id="cv-page">
-        <h1>Curriculum Vitae</h1>
-        <h2>Experience</h2>
-        <p>Professional armpit sniffer with five years of experience.</p>
-        <h2>Skills</h2>
-        <p>Animal husbandry: expert</p>
-        <p>Pickling and brining: seasoned hobbyist</p>
-        <p>Arachnids: expert</p>
-    </body>
+  <head>
+    <title>
+      Curriculum Vitae
+    </title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  {nav}
+  <body id="cv-page">
+    <h1>
+      Curriculum Vitae
+    </h1>
+    <h2>
+      Experience
+    </h2>
+    <p>
+      Professional armpit sniffer with five years of experience.
+    </p>
+    <h2>
+      Skills
+    </h2>
+    <p>
+      Animal husbandry: expert
+    </p>
+    <p>
+      Pickling and brining: seasoned hobbyist
+    </p>
+    <p>
+      Arachnids: expert
+    </p>
+  </body>
 </html>
