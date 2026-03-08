@@ -1,5 +1,5 @@
-from exception import DingerNotOk
-import bstream
+from .. import DingerNotOk
+from ..utils import bstream
 
 def Handle(req, config, ident, data):
     func = None

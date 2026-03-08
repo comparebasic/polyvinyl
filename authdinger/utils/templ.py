@@ -1,5 +1,5 @@
 import os
-import ident
+from . import ident
 
 def templFrom(config, ident, data):
     templ_dir = None

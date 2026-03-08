@@ -1,15 +1,16 @@
 import socketserver, argparse, json, os, select
-from log import GetLogger
-from exception import DingerNotOk
-from user_handler import Handler
-import ident, bstream
+
+from ..utils.log import GetLogger
+from ..utils.exception import DingerNotOk
+from ..utils import ident, bstream
+from .handlers import Handle
 
 STATE_LENGTH = "length"
 STATE_KEY = "key"
 STATE_VALUE = "value"
 states = [STATE_LENGTH, STATE_KEY, STATE_VALUE]
 
-class DingerUserHandler(socketserver.StreamRequestHandler):
+class DingerAuthHandler(socketserver.StreamRequestHandler):
     def handle(self):
         config = self.server.config
 
@@ -52,29 +53,9 @@ class DingerUserHandler(socketserver.StreamRequestHandler):
                 resp = bstream.add(b"", "ok")
                 self.wfile.write(resp)
 
-class DingerUserServer(socketserver.UnixStreamServer):
-    def __init__(self, config, logger, handler_cls, bind_and_activate=True):
+class DingerAuthServer(socketserver.UnixStreamServer):
+    def __init__(self, config, logger, bind_and_activate=True):
         self.config = config
         self.logger = logger
-        return super().__init__(config["socket"], handler_cls, bind_and_activate)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="Authdinger.User",
-        description="ECAuth Socket Server")
-    parser.add_argument("--config")
-    arg = parser.parse_args()
-
-    with open(arg.config, "r") as f:
-        config = json.loads(f.read())
-
-    print("Serving AuthDinger.Serve on {}".format(config["socket"]))
-    streamd = DingerUserServer(config, GetLogger(config), DingerUserHandler) 
-
-    try:
-        streamd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    streamd.server_close()
-    os.remove(config["socket"])
-    
+        return super().__init__(config["auth-socket"],
+            DingerAuthHandler, bind_and_activate)

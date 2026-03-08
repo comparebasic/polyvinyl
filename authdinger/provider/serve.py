@@ -1,21 +1,9 @@
-import argparse, json, urllib
+import argparse, json, urllib, socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import templ, ident, form, handlers
-from log import GetLogger
-from exception import DingerNotOk
 
-class DingerServer(HTTPServer):
-    def __init__(self, config, logger, address, port):
-        self.config = config
-        self.logger = logger
-        if config.get("user_socket"):
-            self.user_server = socket.socket(
-                socket.AF_UNIX, socket.SOCK_STREAM)
-            self.user_server.connect(config["user_socket"])
-        else:
-            self.user_server = None
-
-        return super().__init__(address, port)
+from .. import GetLogger, DingerNotOk
+from ..utils import templ, ident, form
+from .handlers import Handle
 
 class DingerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -98,29 +86,10 @@ class DingerHandler(BaseHTTPRequestHandler):
                 return self.do_GET()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="Authdinger.Serve",
-        description="ECAuth Provider Server")
-    parser.add_argument("--port")
-    parser.add_argument("--config")
-    arg = parser.parse_args()
+class DingerProviderServer(HTTPServer):
+    def __init__(self, config, logger, address):
+        self.config = config
+        self.logger = logger
+        logger.warn("Serving {}".format(address))
+        return super().__init__(address, DingerHandler)
 
-    try:
-        port = int(arg.port)
-    except (ValueError, TypeError) as err:
-        raise ValueError("Expected interger for port number", err)
-
-    with open(arg.config, "r") as f:
-        config = json.loads(f.read())
-        handlers.setup(config)
-
-    print("Serving AuthDinger.Serve on port {}".format(port))
-    httpd = DingerServer(config,
-        GetLogger(config), ('localhost', port), DingerHandler)
-
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()

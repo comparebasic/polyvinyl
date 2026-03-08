@@ -1,4 +1,4 @@
-from exception import DingerNotOk
+from ..utils.exception import DingerNotOk
 
 def Handle(req, config, ident, data):
     func = None

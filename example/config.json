@@ -19,5 +19,6 @@
         "/auth/login": "get@/auth/login"
     },
     "banned-data": {"password": true},
-    "user_socket": "example/user_serve/user.sock"
+    "port": 3000,
+    "auth-socket": "example/auth.sock"
 }
