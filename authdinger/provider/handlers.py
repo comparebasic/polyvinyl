@@ -1,6 +1,7 @@
 import socket
 from .. import DingerNotOk
 from ..utils import bstream
+from ..utils import user 
 
 def Handle(req, config, ident, data):
     func = None
@@ -20,15 +21,10 @@ def pw_auth(req, config, data):
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.connect(config["auth-socket"]) 
 
-        msg = bstream.from_array(
-            (
+        bstream.send(sock, (
                 "pw_auth@{}".format(data["user"]),
                 data["password"], 
-                ""
-            )
-        )
-
-        sock.sendall(msg)
+                ""))
 
         answer = bstream.read_next(sock) 
         if answer != "ok":
@@ -51,6 +47,7 @@ def redir(req, config, data):
 def setup_handlers(config):
     config["_handler-func"] = {
         "pw_auth": pw_auth,
+        "register": user.create,
     }
     config["_handler-action"] = {
         "redir": redir,

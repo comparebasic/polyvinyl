@@ -1,0 +1,30 @@
+<h1>Register</h1>
+<p><span>{error}</span></p>
+<form method="POST" action="{action}">
+    <fieldset>
+    <label name="user">
+        <span>Email</span>
+        <span>
+            <input type="text" name="email" placeholder="user"></input>
+        </span>
+    </label>
+    <label name="user">
+        <span>Full Name</span>
+        <span>
+            <input type="text" name="fullname" placeholder="first middle last"></input>
+        </span>
+    </label>
+    <label name="password">
+        <span>Password</span>
+        <span>
+            <input type="text" name="password" placeholder="password"></input>
+        </span>
+    </label>
+    <label>
+        <span>&nbsp;</span>
+        <span>
+            <button type="submit">Register</button>
+        </span>
+    </fieldset>
+    <input type="hidden" name="redir" value="{redir}" />
+</form>

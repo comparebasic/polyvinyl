@@ -1,3 +1,4 @@
+<h1>Login</h1>
 <p><span>{error}</span></p>
 <form method="POST" action="{action}">
     <label name="user">

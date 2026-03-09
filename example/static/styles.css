@@ -1,0 +1,45 @@
+body {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+fieldset {
+    display: table;
+    border: none;
+    border-collapse: collapse;
+}
+
+fieldset label {
+    display: table-row;
+}
+
+fieldset label span {
+    display: table-cell;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+
+fieldset label span:first-child {
+    text-align: right;
+}
+
+fieldset label input {
+    border-radius: 8px;
+    padding: 4px 8px;
+    width: 200px;
+}
+
+fieldset button {
+    border-radius: 8px;
+    border: none;
+    background: rgb(100,200,100);
+    padding: 4px 8px;
+}
+
+fieldset button:hover {
+    background: rgb(130,230,130);
+}
+
+fieldset button:active {
+    background: rgb(160,200,160);
+}

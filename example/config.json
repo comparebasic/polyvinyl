@@ -1,19 +1,26 @@
 {
     "dirs":{
         "page": "example/page",
-        "inc": "example/inc"
+        "inc": "example/inc",
+        "static": "example/static",
+        "user-data": "example/user-data",
+        "auth-data": "example/auth-data"
     },
     "routes": {
         "/": ["inc@header.html", "page@welcome.html", "inc@footer.html"],
         "/auth/login": [
             "inc@header.html", "page@login-form.format", "inc@footer.html"],
+        "/auth/register": [
+            "inc@header.html", "page@register.format", "inc@footer.html"],
         "/not-found": [
             "inc@header.html", "page@not-found.html", "inc@footer.html"],
         "/error": [
-            "inc@header.html", "page@error.html", "inc@footer.html"]
+            "inc@header.html", "page@error.html", "inc@footer.html"],
+        "/static/styles.css": ["static@styles.css"]
     },
     "handlers": {
-        "/auth/login": ["func@pw_auth", "action@redir"]
+        "/auth/login": ["func@pw_auth", "action@redir"],
+        "/auth/register": ["func@register", "action@redir"]
     },
     "knockouts": {
         "/auth/login": "get@/auth/login"

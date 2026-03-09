@@ -5,6 +5,13 @@ from .. import GetLogger, DingerNotOk
 from ..utils import templ, ident, form
 from .handlers import Handle, setup_handlers
 
+ext_mime = {
+    "css": "text/css",
+    "format": "text/html",
+    "html": "text/html",
+    "txt": "text/plain"
+}
+
 class DingerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         config = self.server.config
@@ -18,8 +25,6 @@ class DingerHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(200)
 
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
 
         data = {}
 
@@ -33,10 +38,23 @@ class DingerHandler(BaseHTTPRequestHandler):
         if not data.get("error"):
             data["error"] = None
             
+        headers = {}
+
         content = ""
         for p in route:
             p_ident = ident.Ident(p)
+            if p_ident.tag == "page" or p_ident.tag == "static":
+                mime = ext_mime.get(p_ident.ext)
+                if mime:
+                    headers["Content-Type"] = mime;
             content += templ.templFrom(config, p_ident, data)
+
+        if not headers.get("Content-Type"):
+            headers["Content-Type"] = "text/html";
+
+        for k,v in headers.items():
+            self.send_header(k, v)
+        self.end_headers()
 
         self.wfile.write(bytes(content, "utf-8"))
 

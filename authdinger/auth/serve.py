@@ -58,8 +58,7 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
 
 
     def respond(self, *args):
-        msg = bstream.from_array(args)
-        self.wfile.write(msg)
+        bstream.send(self.wfile, args)
 
 
 class DingerAuthServer(socketserver.UnixStreamServer):
