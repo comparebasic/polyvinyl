@@ -31,6 +31,7 @@ class DingerHandler(BaseHTTPRequestHandler):
         data["action"] = path
         if query:
             params = form.parseFormData(query)
+            print("params {}".format(params))
             data.update(params)
         else:
             data["redir"] = None

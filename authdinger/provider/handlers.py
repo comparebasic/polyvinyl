@@ -23,16 +23,18 @@ def pw_auth(req, config, data):
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.connect(config["auth-socket"]) 
 
-        email_token = bstream.quote(data["email"]).decode("utf-8")
+        data["email-token"] = bstream.quote(data["email"]).decode("utf-8")
+        password_hash = user.pw_hash(req, config, data)
+
         bstream.send(sock, (
             "ident",     
-                "pw_auth@{}.email".format(email_token),
-            "password",
-                data["password"], 
+                "pw_auth@{}.email".format(data["email-token"]),
+            "password-hash",
+                password_hash, 
             ""))
 
         answer = bstream.read_next(sock) 
-        if answer != "ok":
+        if answer != b"ok":
             reason = bstream.read_next(sock)
             sock.close()
             raise DingerNotOk("Invalid", reason)
@@ -57,7 +59,7 @@ def pw_set(req, config, data):
             ""))
 
         answer = bstream.read_next(sock) 
-        if answer != "ok":
+        if answer != b"ok":
             reason = bstream.read_next(sock)
             sock.close()
             raise DingerNotOk("Invalid", reason)
@@ -76,7 +78,7 @@ def register(req, config, data):
 
 
 def redir(req, config, data):
-    req.send_response(307)
+    req.send_response(302)
     req.send_header("Location", data["redir"])
     req.end_headers()
 

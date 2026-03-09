@@ -3,8 +3,12 @@ import urllib
 def parseFormData(s):
     data = {}
     for x in s.split("&"):
-        k,v = x.split("=")
-        data[k] = urllib.parse.unquote(v, encoding=None, errors=None)
+        pairs = x.split("=", 2)
+        print(pairs)
+        if len(pairs) == 2:
+            k = pairs[0]
+            v = pairs[1]
+            data[k] = urllib.parse.unquote(v, encoding=None, errors=None)
     return data
 
 def toQuery(config, data):

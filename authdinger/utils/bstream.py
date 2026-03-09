@@ -1,6 +1,5 @@
-from .. import BSTREAM_MAX
+from .. import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
 from socket import socket as socktype
-
 
 def quote(s):
     b = bytearray()
@@ -63,12 +62,11 @@ def send_r(stream, arr):
     s = bytearray() 
     for seg in arr:
         if isinstance(seg, str):
-            s += seg.encode("utf-8")
-        else:
-            s += seg
-        if isinstance(seg, str):
             seg = bytes(seg, "utf-8")
+        s += seg
+        print(s)
         s += len(seg).to_bytes(2, "big")
+        print(s)
     print("sending file {}".format(s))
 
     if hasattr(stream, 'send'):
@@ -101,15 +99,16 @@ def read_next(stream):
             )
         )
 
-    return b.decode("utf-8")
+    return b
 
 
 def read_next_r(stream):
     if stream.tell() == 0:
         raise DingerNotOk("Early beginning of file reached")
-    stream.seek(-2, CUR)
-
+    stream.seek(-2, SEEK_CUR)
     length_s = stream.read(2)
+    stream.seek(-2, SEEK_CUR)
+
     length = int.from_bytes(length_s, "big")
     if length == 0:
         return None
@@ -118,9 +117,9 @@ def read_next_r(stream):
 
     if stream.tell() == 0:
         raise DingerNotOk("Early beginning of file reached")
-    stream.seek(-length, CUR)
-
+    stream.seek(-length, SEEK_CUR)
     b = stream.read(length)
+    stream.seek(-length, SEEK_CUR)
 
     if len(b) != length:
         raise TypeError(
@@ -129,13 +128,22 @@ def read_next_r(stream):
             )
         )
 
-    return b.decode("utf-8")
+    return b
 
+def latest_r(stream, key):
+    value = None
+    while stream.tell() > 0:
+        item  = read_next_r(stream)
+        if item == key:
+            return value
+
+        value = item
+    
 
 def arr_to_dict(arr):
     data = {}
     for i in range(0, len(arr), 2):
-        data[arr[i]] = arr[i+1]
+        data[arr[i].decode("utf-8")] = arr[i+1]
 
     if len(arr) % 2:
         data[arr[-1]] = True

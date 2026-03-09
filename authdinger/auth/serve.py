@@ -12,6 +12,7 @@ states = [STATE_LENGTH, STATE_KEY, STATE_VALUE]
 
 class DingerAuthHandler(socketserver.StreamRequestHandler):
     def handle(self):
+        self.server.logger.log("Auth handle")
         config = self.server.config
 
         more = True
@@ -42,7 +43,8 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
         if not data.get("ident"):
             raise DingerNotOk("Ident not found")
 
-        p_ident = ident.Ident(data["ident"])
+        p_ident = ident.Ident(data["ident"].decode('utf-8'))
+        self.server.logger.log("Auth handle ident{}".format(p_ident))
         try:
             Handle(self, config, p_ident, data)
 

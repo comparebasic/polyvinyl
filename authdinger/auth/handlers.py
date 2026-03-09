@@ -1,6 +1,6 @@
 import os, bcrypt
 from ..utils.exception import DingerNotOk
-from ..utils.bstream import quote, unquote, send_r, read_next_r
+from ..utils import bstream
 from .. import SEEK_END, SEEK_CUR, SEEK_START
 
 def Handle(req, config, ident, data):
@@ -22,9 +22,9 @@ def Handle(req, config, ident, data):
 
 def pw_auth(req, config, data):
     req.server.logger.log("Auth Password {}".format(
-        unquote(data["email-token"])))
+        bstream.unquote(data["email-token"])))
 
-    fname = "{}.rseg".format(data["email_token"])
+    fname = "{}.rseg".format(data["email-token"])
     path = os.path.join(config["dirs"]["auth-data"],fname)
 
     with open(path, "rb") as f:
@@ -33,12 +33,9 @@ def pw_auth(req, config, data):
         if f.tell() == 0:
             raise DingerNotOk("Empty User File")
 
-        value = None
-        while f.tell() > 0:
-            item  = read_next_r(stream)
-            if item == b"password-hash":
-                break;
-            value = item
+        value = bstream.latest_r(f, b"password-hash")
+
+    req.server.logger.log("Auth Password data {} vs pw {}".format(data, value))
 
     if value != data["password-hash"]:
         raise DingerNotOk("password mismatch")
@@ -46,7 +43,7 @@ def pw_auth(req, config, data):
 
 def pw_set(req, config, data):
     req.server.logger.log("Setting Password {}".format(
-        unquote(data["email-token"])))
+        bstream.unquote(data["email-token"])))
 
     fname = "{}.rseg".format(data["email-token"])
     print("fname is {}".format(fname))
@@ -62,4 +59,4 @@ def pw_set(req, config, data):
         else:
             details = ["password-hash", data["password-hash"]]
 
-        send_r(f, details)
+        bstream.send_r(f, details)
