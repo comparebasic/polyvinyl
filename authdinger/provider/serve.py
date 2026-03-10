@@ -2,7 +2,7 @@ import argparse, json, urllib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from .. import GetLogger, DingerNotOk
-from ..utils import templ, ident, form
+from ..utils import templ, ident, form, session
 from .handlers import Handle, setup_handlers
 
 ext_mime = {
@@ -13,8 +13,23 @@ ext_mime = {
 }
 
 class DingerHandler(BaseHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        self.header_stage = {}
+        self.session = {}
+        return super().__init__(*args, **kwargs)
+
+    def do_cookie(self, config):
+        cookie = self.headers.get("Cookie")
+        self.server.logger.warn("Session From {}".format(cookie))
+        if cookie:
+            ssion = session.from_cookie(config, cookie)
+            if ssion:
+                self.session = ssion
+                self.server.logger.warn("Session Data {}".format(self.session))
+
     def do_GET(self):
         config = self.server.config
+        self.do_cookie(config)
 
         path, query = form.parseUrl(self.path)
 
@@ -25,13 +40,11 @@ class DingerHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(200)
 
-
         data = {}
 
         data["action"] = path
         if query:
             params = form.parseFormData(query)
-            print("params {}".format(params))
             data.update(params)
         else:
             data["redir"] = None
@@ -39,21 +52,21 @@ class DingerHandler(BaseHTTPRequestHandler):
         if not data.get("error"):
             data["error"] = None
             
-        headers = {}
 
         content = ""
         for p in route:
             p_ident = ident.Ident(p)
             if p_ident.tag == "page" or p_ident.tag == "static":
+                data.update(self.session)
                 mime = ext_mime.get(p_ident.ext)
                 if mime:
-                    headers["Content-Type"] = mime;
+                    self.header_stage["Content-Type"] = mime;
             content += templ.templFrom(config, p_ident, data)
 
-        if not headers.get("Content-Type"):
-            headers["Content-Type"] = "text/html";
+        if not self.header_stage.get("Content-Type"):
+            self.header_stage["Content-Type"] = "text/html";
 
-        for k,v in headers.items():
+        for k,v in self.header_stage.items():
             self.send_header(k, v)
         self.end_headers()
 

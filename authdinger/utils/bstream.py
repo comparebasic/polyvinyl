@@ -138,6 +138,21 @@ def latest_r(stream, key):
             return value
 
         value = item
+
+def map_r(stream, keys):
+    key = None
+    value = None
+    data = {}
+    while stream.tell() > 0:
+        item  = read_next_r(stream)
+        if value:
+            key = item.decode("utf-8")
+            if keys.get(key) is not None and data.get(key) is not None: 
+                data[key] = value 
+            value = None
+        else:
+            value = item
+    return data
     
 
 def arr_to_dict(arr):

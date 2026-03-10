@@ -1,8 +1,6 @@
 import socket
 from .. import DingerNotOk
-from ..utils import bstream
-from ..utils import user 
-from ..utils import bstream
+from ..utils import bstream, user, session
 
 
 def Handle(req, config, ident, data):
@@ -44,6 +42,13 @@ def pw_auth(req, config, data):
     else:
         raise DingerNotOk("No Auth Service Defined")
 
+def session_start(req, config, data):
+    session.start(req, config, data)
+
+    cookie = "Ssid={}; Expires={}; HttpOnly; Secure; SameSite=Strict;".format(
+        data["session-token"], data["session-expires"])
+    req.header_stage["Set-Cookie"] = cookie
+
 
 def pw_set(req, config, data):
     if config.get("auth-socket"): 
@@ -70,6 +75,10 @@ def pw_set(req, config, data):
         raise DingerNotOk("No Auth Service Defined")
 
 
+def gather_user(req, config, data):
+    pass
+
+
 def register(req, config, data):
     try:
         user.create(req, config, data)
@@ -80,6 +89,8 @@ def register(req, config, data):
 def redir(req, config, data):
     req.send_response(302)
     req.send_header("Location", data["redir"])
+    for k,v in req.header_stage.items():
+        req.send_header(k, v)
     req.end_headers()
 
 
@@ -88,6 +99,8 @@ def setup_handlers(config):
         "pw_auth": pw_auth,
         "pw_set": pw_set,
         "register": user.create,
+        "gather_user": gather_user,
+        "session_start": session_start,
     }
     config["_handler-action"] = {
         "redir": redir,

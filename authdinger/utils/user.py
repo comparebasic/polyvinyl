@@ -23,6 +23,7 @@ def create(req, config, data):
 
     details = [
         "email-token", email_token,
+        "email", data["email"],
         "fullname", data["fullname"],
         "salt", data["salt"]]
 

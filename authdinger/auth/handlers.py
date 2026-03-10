@@ -3,6 +3,7 @@ from ..utils.exception import DingerNotOk
 from ..utils import bstream
 from .. import SEEK_END, SEEK_CUR, SEEK_START
 
+
 def Handle(req, config, ident, data):
     func = None
     if ident.ext == "email":

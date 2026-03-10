@@ -4,7 +4,8 @@
         "inc": "example/inc",
         "static": "example/static",
         "user-data": "example/user-data",
-        "auth-data": "example/auth-data"
+        "auth-data": "example/auth-data",
+        "sessions": "example/sessions"
     },
     "routes": {
         "/": ["inc@header.html", "page@welcome.html", "inc@footer.html"],
@@ -16,10 +17,27 @@
             "inc@header.html", "page@not-found.html", "inc@footer.html"],
         "/error": [
             "inc@header.html", "page@error.html", "inc@footer.html"],
+        "/auth/dashboard": [
+            "inc@header.html", "page@dashboard.format", "inc@footer.html"],
         "/static/styles.css": ["static@styles.css"]
     },
+    "fields": {
+        "session": {
+            "email-token": false,
+            "start-time": true,
+            "session-token": true,
+            "fullname": true
+        },
+        "user": {
+            "fullname": true,
+            "email": true
+        }
+    },
+    "gathers": {
+        "/user": ["func@gather_user"]
+    },
     "handlers": {
-        "/auth/login": ["func@pw_auth", "action@redir"],
+        "/auth/login": ["func@pw_auth", "func@session_start", "action@redir"],
         "/auth/register": ["func@register", "func@pw_set", "action@redir"]
     },
     "knockouts": {
