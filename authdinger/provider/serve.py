@@ -20,8 +20,8 @@ class DingerHandler(BaseHTTPRequestHandler):
 
     def do_cookie(self, config):
         cookie = self.headers.get("Cookie")
-        self.server.logger.warn("Session From {}".format(cookie))
         if cookie:
+            self.server.logger.warn("Session From {}".format(cookie))
             ssion = session.from_cookie(config, cookie)
             if ssion:
                 self.session = ssion

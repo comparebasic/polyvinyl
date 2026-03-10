@@ -24,7 +24,7 @@
     "fields": {
         "session": {
             "email-token": false,
-            "start-time": true,
+            "start-time": false,
             "session-token": true,
             "fullname": true
         },

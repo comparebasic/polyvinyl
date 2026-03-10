@@ -17,28 +17,39 @@ def from_cookie(config, cookie):
     path = os.path.join(config["dirs"]["sessions"], c_data["Ssid"])
     keys = config["fields"]["session"]
     try:
-        with open(path, "rb") as f:
-            f.seek(0, SEEK_END)
-            data = bstream.map_r(f, keys)
-            print("DATA {}".format(data))
+        f = open(path, "rb")
+    except FileNotFoundError:
+        raise DingerNotOk("Session not found")
+        
+    f.seek(0, SEEK_END)
+    s_data = bstream.map_r(f, keys)
+    f.close()
 
-            if data.get("email-token") is not None:
-                fname = "{}.rseg".format(data["email-token"].decode("utf-8"))
-                u_path = os.path.join(
-                    config["dirs"]["user-data"], fname)
-                u_keys = config["fields"]["user"]
+    if not s_data.get("email-token"):
+        raise DingerNotOk("User email-token not found")
 
-                del data["email-token"]
-                with open(u_path, "rb") as u:
-                    u.seek(0, SEEK_END)
-                    data.update(bstream.map_r(u, u_keys))
+    fname = "{}.rseg".format(s_data["email-token"].decode("utf-8"))
+    u_path = os.path.join(config["dirs"]["user-data"], fname)
+    u_keys = config["fields"]["user"]
 
-                    for k,v in data.items():
-                        data[k] = v.decode("utf-8")
-
-                    return data
+    try:
+        u = open(u_path, "rb")
     except FileNotFoundError:
         raise DingerNotOk("User not found")
+
+    u.seek(0, SEEK_END)
+    data = bstream.map_r(u, u_keys)
+    u.close()
+
+    for k,v in data.items():
+        data[k] = v.decode("utf-8")
+
+    for k,v in keys.items():
+        if v and s_data.get(k):
+            print(k)
+            data[k] = s_data[k].decode("utf-8")
+
+    return data
 
 
 def time_bytes(t):

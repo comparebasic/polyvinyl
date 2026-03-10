@@ -147,7 +147,7 @@ def map_r(stream, keys):
         item  = read_next_r(stream)
         if value:
             key = item.decode("utf-8")
-            if keys.get(key) is not None and data.get(key) is not None: 
+            if keys.get(key) is not None and data.get(key) is None: 
                 data[key] = value 
             value = None
         else:
