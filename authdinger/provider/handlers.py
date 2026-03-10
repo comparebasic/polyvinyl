@@ -51,6 +51,9 @@ def session_start(req, config, data):
 
 
 def pw_set(req, config, data):
+    if data.get("send-email-auth"):
+        return
+
     if config.get("auth-socket"): 
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.connect(config["auth-socket"]) 
@@ -86,6 +89,19 @@ def register(req, config, data):
         raise DingerNotOk("Unable to register", err.args[0])
 
 
+def send_email(req, config, data):
+    pass
+
+
+def send_auth_email(req, config, data):
+    pass
+
+
+def auth_email(req, config, data):
+    if data.get("send-email-auth"):
+        send_auth_email(req, config, data)
+
+
 def redir(req, config, data):
     req.send_response(302)
     req.send_header("Location", data["redir"])
@@ -101,6 +117,7 @@ def setup_handlers(config):
         "register": user.create,
         "gather_user": gather_user,
         "session_start": session_start,
+        "auth_email": auth_email,
     }
     config["_handler-action"] = {
         "redir": redir,

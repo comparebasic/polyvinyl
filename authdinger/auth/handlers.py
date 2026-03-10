@@ -2,6 +2,8 @@ import os, bcrypt
 from ..utils.exception import DingerNotOk
 from ..utils import bstream
 from .. import SEEK_END, SEEK_CUR, SEEK_START
+import datetime
+
 
 def get_authdir(config, email_token):
     return os.path.join(config["dirs"]["auth-data"], email_token)
@@ -9,6 +11,9 @@ def get_authdir(config, email_token):
 def get_authfile(config, email_token):
     return os.path.join(get_authdir(config, email_token),
                 "auth.linr")
+
+def get_tokenfile(config, email_token, token):
+    return os.path.join(get_authdir(config, email_token), token)
 
 def Handle(req, config, ident, data):
     func = None
@@ -47,6 +52,40 @@ def pw_auth(req, config, data):
         raise DingerNotOk("password mismatch")
 
 
+def token_create(req, config, data):
+    req.server.logger.log("Setting Token {}".format(
+        bstream.unquote(data["email-token"])))
+
+    dir_path = get_authdir(config, data["email-token"])
+    if not os.path.exists(dir_path):
+        raise DingerNotOk("User dir not found")
+
+    token = utils.token(data["email-token"])
+    path = get_tokenfile(config, data["email-token"], token)
+
+    with open(path, "w+") as f:
+        f.write(rfc822(datetime.now()))
+
+    return token
+
+
+def token_consume(req, config, data):
+    req.server.logger.log("Consuming Token {}".format(
+        bstream.unquote(data["email-token"])))
+
+    dir_path = get_authdir(config, data["email-token"])
+    if not os.path.exists(dir_path):
+        raise DingerNotOk("User dir not found")
+
+    token = utils.token(data["email-token"])
+    path = get_tokenfile(config, data["email-token"], token)
+
+    if not os.path.exists(path):
+        raise DingerNotOk("Invalid")
+
+    os.remove(path)
+
+
 def pw_set(req, config, data):
     req.server.logger.log("Setting Password {}".format(
         bstream.unquote(data["email-token"])))
@@ -56,6 +95,7 @@ def pw_set(req, config, data):
     dir_path = get_authdir(config, data["email-token"])
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
+        os.mkdir(os.path.join(dir_path, "tokens"))
 
     with open(path, "wb") as f:
         f.seek(0, SEEK_END)

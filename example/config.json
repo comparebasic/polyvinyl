@@ -11,6 +11,8 @@
         "/": ["inc@header.html", "page@welcome.html", "inc@footer.html"],
         "/auth/login": [
             "inc@header.html", "page@login-form.format", "inc@footer.html"],
+        "/auth/token-login": [
+            "inc@header.html", "page@tokin-login.format", "inc@footer.html"],
         "/auth/register": [
             "inc@header.html", "page@register.format", "inc@footer.html"],
         "/not-found": [
@@ -38,8 +40,14 @@
         "/user": ["func@gather_user"]
     },
     "handlers": {
-        "/auth/login": ["func@pw_auth", "func@session_start", "action@redir"],
-        "/auth/register": ["func@register", "func@pw_set", "action@redir"]
+        "/auth/login": [
+            "func@auth_email", "func@pw_auth", 
+            "func@session_start", "action@redir"],
+        "/auth/tokin-login": [
+            "func@taken_consume", "action@redir"],
+        "/auth/register": [
+            "func@register", "func@auth_email",
+            "func@pw_set", "action@redir"]
     },
     "knockouts": {
         "/auth/login": "get@/auth/login"

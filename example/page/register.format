@@ -22,7 +22,7 @@
     </label>
     <label>
         <span>
-            <input type="checkbox" data-disable="password" name="email-auth" />
+            <input type="checkbox" data-disable="password" name="send-email-auth" />
         </span>
         <span>
             Email an Auth Token instead!

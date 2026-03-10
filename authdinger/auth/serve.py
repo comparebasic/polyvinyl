@@ -46,10 +46,14 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
         p_ident = ident.Ident(data["ident"].decode('utf-8'))
         self.server.logger.log("Auth handle ident{}".format(p_ident))
         try:
-            Handle(self, config, p_ident, data)
+            resp = Handle(self, config, p_ident, data)
 
-            self.server.logger.log("Successful login")
-            self.respond("ok", "")
+            self.server.logger.log("Successful")
+            if resp:
+                self.respond("ok", resp, "")
+            else:
+                self.respond("ok", "")
+
             return
 
         except DingerNotOk as err:
@@ -57,7 +61,7 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
             self.respond("no", err.args[0], "")
             return
 
-        self.server.logger.log("Noop login")
+        self.server.logger.log("Noop")
         self.respond("no", "")
 
 

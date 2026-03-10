@@ -1,9 +1,10 @@
-import random, time, hashlib, os
+import time, os
 from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
 from .. import DingerNotOk, SESSION_DAYS, SEEK_END, SEEK_CUR, SEEK_START
 from ..utils import bstream
 from ..utils.user import get_userfile
+from ..utils.token import get_token, rfc822
 
 
 def from_cookie(config, cookie):
@@ -54,20 +55,6 @@ def from_cookie(config, cookie):
 
 def time_bytes(t):
     return int(t*1000000).to_bytes(8)
-
-
-def rfc822(dt):
-    ctime = dt.ctime()
-    return "{}, {} {}".format(
-        ctime[:3], ctime[4:8], dt.strftime(" %d %Y %H:%M:%S %Z"))
-
-
-def get_token(content):
-    h = hashlib.sha256()
-    h.update(content)
-    h.update(time_bytes(time.time()))
-    h.update(random.randbytes(4))
-    return h.hexdigest() 
 
 
 def start(req, config, data):
