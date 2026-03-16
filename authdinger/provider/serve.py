@@ -1,4 +1,4 @@
-import argparse, json, urllib
+import argparse, json, urllib, traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from ..utils.maps import http_messages
@@ -90,7 +90,7 @@ class DingerHandler(BaseHTTPRequestHandler):
             data["error"] = str(err.args)
             self.resolve("/error", data)
             self.code = 500
-            self.server.logger.error(err)
+            self.server.logger.error(err, traceback.format_exception(err))
 
         if self.code == 0:
             self.code = 200

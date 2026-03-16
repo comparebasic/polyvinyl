@@ -37,6 +37,7 @@ def load(req, ident):
     except FileNotFoundError:
         raise DingerNotOk("Session not found")
         
+    req.server.logger.log("Session Data {}".format(data))
 
     if not data.get("email-token"):
         raise DingerNotOk("User email-token not found")

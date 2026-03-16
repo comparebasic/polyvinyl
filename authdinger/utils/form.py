@@ -15,8 +15,6 @@ def parseFormData(s):
 def toQuery(config, data):
     query = ""
     for k, v in data.items():
-        if config["banned-data"].get(k):
-            continue
 
         if query:
             query += "&"

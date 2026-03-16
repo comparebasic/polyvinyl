@@ -1,5 +1,6 @@
-from .. import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
 from socket import socket as socktype
+from .. import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
+from ..utils import identifier
 
 def quote(s):
     b = bytearray()
@@ -155,11 +156,13 @@ def map_str_r(stream, keys=None):
     data = {}
     raw = map_r(stream, keys)
     for k, v in raw.items():
+        print("item ({}/{})".format(k,v))
         if not keys:
             data[k] = v.decode("utf-8") 
 
         elif keys[k]:
             value = v.decode("utf-8")
+            data[k] = value 
             if isinstance(keys[k], (str)):
                 ident = identifier.Ident(keys[k])
                 if ident.tag == "unquote":

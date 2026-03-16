@@ -1,18 +1,13 @@
 import socket, bcrypt
 from ..utils.exception import \
      DingerNotOk, DingerError, DingerKnockout, DingerReChain
-from ..utils import bstream, user, session, templ
+from ..utils import bstream, user, session, templ, form
 from ..utils.maps import mime_map
 from smtplib import SMTP
 import smtplib
 
 
-def end(req, ident, data):
-    req.done = True
-    raise DingerKnockout()
-
-
-def map(req, ident, data):
+def _map(req, ident, data, dest):
     config = req.server.config
 
     kv = {}
@@ -52,18 +47,32 @@ def map(req, ident, data):
                     source = config 
 
             for k,v in kv.items():
-                print(k)
                 if v.endswith("?"):
                     v = v[:-1]
                     if k.endswith("?"):
                         k = k[:-1]
-                    data[k] = source.get(v)
+                    dest[k] = source.get(v)
                 else:
                     if not source.get(v):
                         raise DingerKnockout("Field not found for query {}".format(ident))
-                    data[k] = source[v]
+                    dest[k] = source[v]
 
-    req.server.logger.log("After Map {} {}".format(ident, data))
+    req.server.logger.log("After Map {} {}".format(ident, dest))
+
+
+def end(req, ident, data):
+    req.done = True
+    raise DingerKnockout()
+
+
+def map(req, ident, data):
+    _map(req, ident, data, data)
+
+
+def set_query(req, ident, data):
+    req.query_data = {}
+    if ident.name:
+        _map(req, ident, data, req.query_data)
 
 
 def get(req, ident, data):
@@ -115,6 +124,10 @@ def redir(req, ident, data):
 
     if not location:
         location = "/error"
+    elif req.query_data:
+        location = "{}?{}".format(
+            location,
+            form.toQuery(req.server.config, req.query_data))
         
     req.send_header("Location", location)
     for k,v in req.header_stage.items():
@@ -151,7 +164,29 @@ def pw_auth(req, ident, data):
         raise DingerNotOk("No Auth Service Defined")
 
 def token_consume(req, ident, data):
-    pass
+    config = req.server.config
+    if config.get("auth-socket"): 
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect(config["auth-socket"]) 
+
+        bstream.send(sock, (
+            "ident",     
+                "token_consume={}@email".format(data["email-token"]),
+            "token",
+                data["token"], 
+            ""))
+
+        answer = bstream.read_next(sock) 
+        if answer != b"ok":
+            reason = bstream.read_next(sock)
+            sock.close()
+            raise DingerNotOk("Invalid", reason)
+
+        del data["token"]
+        sock.close()
+
+    else:
+        raise DingerNotOk("No Auth Service Defined")
 
 
 def session_start(req, ident, data):
@@ -269,12 +304,3 @@ def get_token(req, ident, data):
 def auth_email(req, ident, data):
     if data.get("send-email-auth"):
         send_auth_email(req, ident, data)
-
-
-def redir(req, ident, data):
-    req.send_response(302)
-    req.send_header("Location", data["redir"])
-    for k,v in req.header_stage.items():
-        req.send_header(k, v)
-    req.end_headers()
-
