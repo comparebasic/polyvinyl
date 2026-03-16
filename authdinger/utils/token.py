@@ -7,6 +7,12 @@ def time_bytes(t):
 
 def get_token(content):
     h = hashlib.sha256()
+
+    if not isinstance(content, (bytes)):
+        content = content.encode("utf-8")
+
+    print(repr(content))
+
     h.update(content)
     h.update(time_bytes(time.time()))
     h.update(random.randbytes(4))

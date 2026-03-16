@@ -12,12 +12,12 @@
         "/": [
             "get", "content=welcome.html@page"],
         "/auth/login": [
-            ["get", "map=action/path@req", "map=redir@query", "set_query", "content=login-form.format@page", "end"],
-            ["post", "map=email,send-email-auth?,password?@form", "map=redir@query", "set_query",
-                ["data_eq=on@send-auth-email", "auth_email", "session_start", "redir=redir@data", "end"],
-                ["pw_auth", "session_start", "redir=redir@data", "end"] 
+            ["get", "map=action/path@req", "set_query", "content=login-form.format@page", "end"],
+            ["post", "map=email,send-email-auth?,password?@form", "set_query",
+                ["data_eq=on@send-auth-email", "auth_email", "session_start", "redir=/auth/dashboard", "end"],
+                ["pw_auth", "session_start", "redir=/auth/dashboard", "end"] 
             ],
-            ["map=action/path@req", "map=redir@query", "content=login-form.format@page", "end"]
+            ["map=action/path@req", "content=login-form.format@page", "end"]
         ],
         "/auth/token-login": [
             ["get", "map=redir,token,email@query", "set_query", "token_consume", "session_start", "redir=redir@data", "end"],
@@ -35,6 +35,10 @@
         "/auth/dashboard": [
             ["get", "session_open", "map=email,fullname@session", "content=dashboard.format@page", "end"],
             ["set_query=redir/path@req", "redir=/auth/login", "end"]
+        ],
+        "/auth/logout": [
+            ["get", "session_close", "redir=/", "end"],
+            ["redir=/auth/login", "end"]
         ],
         "/static/styles.css": ["content=styles.css@static"],
         "/static/form.js": ["content=form.js@static"],

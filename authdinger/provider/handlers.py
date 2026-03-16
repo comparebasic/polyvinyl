@@ -206,6 +206,13 @@ def session_open(req, ident, data):
     req.server.logger.log("Session {}".format(req.session))
 
 
+def session_close(req, ident, data):
+    session.close(req, ident)
+    cookie = "Ssid=; Expires={}; HttpOnly; Secure; SameSite=Strict;".format(
+        "Thu, 01 Jan 1970 00:00:00 GMT")
+    req.header_stage["Set-Cookie"] = cookie
+    
+
 def pw_set(req, ident, data):
     config = req.server.config
     if config.get("auth-socket"): 
@@ -302,6 +309,7 @@ def get_token(req, ident, data):
 
     else:
         raise DingerNotOk("No Auth Service Defined")
+
 
 
 def auth_email(req, ident, data):

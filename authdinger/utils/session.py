@@ -20,6 +20,17 @@ def parse_cookie(cookie):
 
     return data
 
+def close(req, ident):
+    config = req.server.config
+    if not req.cookie.get("Ssid"):
+        raise DingerNotOk("No Ssid from cookie")
+
+    path = os.path.join(config["dirs"]["sessions"], req.cookie["Ssid"])
+    if not os.path.exists(path):
+        raise DingerNotOk("No Ssid file found")
+
+    os.remove(path)
+    req.session = {}
 
 def load(req, ident):
     data = {}

@@ -29,5 +29,4 @@
         </span>
     </label>
     </fieldset>
-    <input type="hidden" name="redir" value="{redir}" />
 </form>
