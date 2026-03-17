@@ -1,4 +1,4 @@
-import socketserver, argparse, json, os, select
+import socketserver, argparse, json, os, select, stat
 
 from ..utils.log import GetLogger
 from ..utils.exception import DingerNotOk
@@ -13,7 +13,6 @@ states = [STATE_LENGTH, STATE_KEY, STATE_VALUE]
 class DingerAuthHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
-        self.server.logger.log("Auth handle")
         config = self.server.config
 
         more = True
@@ -28,7 +27,6 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
             try:
                 content = bstream.read_next(self.rfile)
             except (ValueError, TypeError) as err:
-                self.server.logger.error("Erronous login")
                 self.respond("no", err.args[0], "")
                 return
                 
@@ -56,8 +54,6 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
             raise DingerNotOk("Ident not found")
 
         ident = identifier.Ident(data["ident"].decode('utf-8'))
-        self.server.logger.log("Auth handle ident {} with {}".format(
-            ident, data))
         try:
             if not hasattr(handlers, ident.tag):
                 raise DingerNotOk("Handler not found {}".format(ident.tag))
@@ -89,8 +85,11 @@ class DingerAuthHandler(socketserver.StreamRequestHandler):
 
 
 class DingerAuthServer(socketserver.UnixStreamServer):
-    def __init__(self, config, logger, bind_and_activate=True):
+    def __init__(self, config, logger, _bind_and_activate=True):
         self.config = config
         self.logger = logger
-        return super().__init__(config["auth-socket"],
-            DingerAuthHandler, bind_and_activate)
+        super().__init__(config["auth-socket"], DingerAuthHandler, True)
+        perms = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
+        os.chmod(config["auth-socket"], perms)
+
+

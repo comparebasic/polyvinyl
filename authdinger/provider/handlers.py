@@ -276,6 +276,10 @@ def register(req, ident, data):
 
 def email(req, ident, data):
     config = req.server.config
+
+    if not data.get('email-token'):
+        data["email-token"] = bstream.unquote(data["email"])
+
     msg = templ.emailMsgFromIdent(config, 
         ident, data,
         from_addr=config["system-email"], to_addrs=[data["email"]])
@@ -310,8 +314,3 @@ def get_token(req, ident, data):
     else:
         raise DingerNotOk("No Auth Service Defined")
 
-
-
-def auth_email(req, ident, data):
-    if data.get("send-email-auth"):
-        send_auth_email(req, ident, data)

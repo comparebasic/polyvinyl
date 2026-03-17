@@ -31,12 +31,8 @@ def do_chain(req, chain, data):
                 do_chain(req, h, data)
                 continue
             except DingerKnockout as ko:
-                req.server.logger.warn(
-                    "Knockout {}".format(str(ko.args)))
                 continue
             except DingerNotOk as nok:
-                req.server.logger.warn(
-                    "NotOk {}".format(str(nok.args)))
                 data["error"] = str(nok.args)
                 continue
             except DingerError as err:
@@ -44,8 +40,8 @@ def do_chain(req, chain, data):
                 raise 
 
         elif isinstance(h, (Inst)):
+            req.server.logger.log("Handle {}".format(h))
             try:
-                req.server.logger.warn("Handler {}".format(h))
                 h.func(req, h.ident, data)
 
             except (DingerNotOk, DingerError) as err:
