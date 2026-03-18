@@ -129,7 +129,7 @@ def redir(req, ident, data):
             form.toQuery(req.server.config, req.query_data))
         
     req.code = 302
-    req.header_stage["Location"] =  location)
+    req.header_stage["Location"] = location
     req.server.logger.log("Redir {}".format(location))
     
 
