@@ -35,11 +35,11 @@ def do_chain(req, chain, data):
                 continue
             except DingerNotOk as nok:
                 data["error"] = str(nok.args)
-                req.server.logger.log("NotOk {}".format(ko))
+                req.server.logger.log("NotOk {}".format(nok))
                 continue
             except DingerError as err:
                 data["error"] = str(err.args)
-                req.server.logger.log("Error {}".format(ko))
+                req.server.logger.log("Error {}".format(err))
                 raise 
 
         elif isinstance(h, (Inst)):
