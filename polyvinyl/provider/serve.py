@@ -109,7 +109,7 @@ class DingerHandler(BaseHTTPRequestHandler):
         if len(self.content) > 0:
             self.wfile.write(bytes(self.content, "utf-8"))
 
-        self.server.logger.log("Served {}".format(path))
+        self.server.logger.warn("Served {}".format(path))
             
 
 class DingerProviderServer(HTTPServer):
