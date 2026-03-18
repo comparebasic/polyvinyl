@@ -1,8 +1,8 @@
 http_messages = {
     0: "Error",
     200: "Ok",
-    500: "Server Error",
-    404: "Not Found",
+    500: "Server error",
+    404: "Not found",
     302: "Temporary redirect"
 }
 

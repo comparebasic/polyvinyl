@@ -116,7 +116,6 @@ def data_neq(req, ident, data):
 inc = static = page = content
 
 def redir(req, ident, data):
-    req.send_response(302)
     if ident.location == "data":
         location = data.get(ident.name)
     else:
@@ -129,12 +128,9 @@ def redir(req, ident, data):
             location,
             form.toQuery(req.server.config, req.query_data))
         
-    req.send_header("Location", location)
+    req.code = 302
+    req.header_stage["Location"] =  location)
     req.server.logger.log("Redir {}".format(location))
-    for k,v in req.header_stage.items():
-        req.send_header(k, v)
-    req.end_headers()
-    req.done = True
     
 
 def pw_auth(req, ident, data):

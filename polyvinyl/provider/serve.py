@@ -96,7 +96,7 @@ class DingerHandler(BaseHTTPRequestHandler):
         if self.code == 0:
             self.code = 200
 
-        if not self.header_stage.get("Content-Type"):
+        if self.code != 302 and not self.header_stage.get("Content-Type"):
             self.header_stage["Content-Type"] = "text/html";
 
         self.send_response(self.code, http_messages[self.code]) 
