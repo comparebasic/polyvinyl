@@ -67,6 +67,7 @@ class DingerHandler(BaseHTTPRequestHandler):
 
     def _do_STUFF(self):
         path, _ = form.parseUrl(self.path)
+        self.server.logger.warn("Processing {} Headers {}".format(path, self.headers))
 
         config = self.server.config
 
