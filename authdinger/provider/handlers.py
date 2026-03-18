@@ -324,7 +324,7 @@ def set_token_url(req, ident, data):
     if not data.get('email-token'):
         data["email-token"] = bstream.quote(data["email"]).decode("utf-8")
     
-    data["login-url"] = "{}{}?email={}&token={}".format(
+    data["login-url"] = "{}{}?email={}&six-code={}".format(
         data["url"], ident.name, data["email-token"], data["six-code"])
     
 
