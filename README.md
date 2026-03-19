@@ -10,6 +10,10 @@ This is a task-management and web application framework based on the following t
 
 This system is presently written in Python 3 and available under a 3-clause BSD [Licence](LICENSE).
 
+Architectural Diagram:
+
+![Architectural Diagram](doc/polyvinyl-arch.svg)
+
 # Services
 
 Two services are included, one for authentication and one for web services management.
