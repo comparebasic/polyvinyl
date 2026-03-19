@@ -10,11 +10,11 @@ This is used for defining what function to run, what action to perform, or what 
 
 example identifiers:
 
-    - redir=/auth/login
-    - map=action/path@req
-    - pw_set
-    - session_start
-    - register=test%40cb%2elocal@email
+- redir=/auth/login
+- map=action/path@req
+- pw_set
+- session_start
+- register=test%40cb%2elocal@email
     
 
 To describe what each identifier does, It's worth understanding what this system does: it routes a series of actions to move data and process or product a webpage.

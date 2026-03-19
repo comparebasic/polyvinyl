@@ -81,11 +81,11 @@ credentials to use for actions like user login or registration.
 
 example identifiers:
 
-    - redir=/auth/login
-    - map=action/path@req
-    - pw_set
-    - session_start
-    - register=test%40cb%2elocal@email
+- redir=/auth/login
+- map=action/path@req
+- pw_set
+- session_start
+- register=test%40cb%2elocal@email
     
 
 To describe what each identifier does, It's worth understanding what this
@@ -94,5 +94,5 @@ a webpage.
 
 See more about what these identifiers mean in the [Identifier](doc/identifier.md) documentation.
 
-(c) Copyright 2026 - Copmpare Basic Incorporated
+(c) Copyright 2026 - Compare Basic Incorporated
 See [licence](LICENSE) for details.
