@@ -41,7 +41,7 @@ This is a discipline of creating small parts that get routed around the
 application almost like spaces. It has a strong focus on keeping behaviour in
 lists and configuration that can be read and discussed at a high level.
 
-# `Chain` configuration syntax
+# `Chain` Configuration Syntax
 
 Here is an example configuration for the routes of the login page:
 

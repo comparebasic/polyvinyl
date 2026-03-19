@@ -1,4 +1,4 @@
-# `Chain` configuration syntax
+# `Chain` Configuration Syntax
 
 Here is an example configuration for the routes of the login page:
 
