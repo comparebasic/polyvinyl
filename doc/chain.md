@@ -28,7 +28,7 @@ Let's break down what this is doing:
 "routes": {
     // Serve the following config for a page http://<host>/auth/login
     "/auth/login": [
-        ...
+        // ...
     ]
 }
 ```
@@ -48,7 +48,7 @@ Let's break down what this is doing:
             // Finish and send request
             "end"
         ],
-        ...
+        // ...
 }
 ```
 
@@ -66,7 +66,7 @@ Let's break down what this is doing:
             "post",  
             // Copy values from the form submission 
             "map=email,auth-method,password?,fullname?@form", 
-        ...
+        // ...
     ]
 }
 ```
@@ -101,7 +101,7 @@ Let's break down what this is doing:
                 // Set the request as `done`
                 "end"
         ]
-        ...
+        // ...
     ]
 }
 ```
