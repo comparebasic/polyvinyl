@@ -19,7 +19,7 @@ Architectural Diagram:
 The main convention of the system is that it uses a series three-part
 identifiers to define behavior. These identifiers are stored in a
 [configuration](example/config.json) file that loads against a
-[module](provider/handlers.py) with functions defined to be triggered by the
+[module](polyvinyl/provider/handlers.py) with functions defined to be triggered by the
 identifiers.
 
 An example identifiery is as follows, see more about identifiers [here](doc/identifier.md):
