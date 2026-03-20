@@ -1,6 +1,7 @@
 import socket
-from .. import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
-from ..utils import identifier
+from . import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
+from .utils import identifier
+from .utils.exception import PolyVinylError, PolyVinylNotOk
 
 def query_path(path, details):
     try:

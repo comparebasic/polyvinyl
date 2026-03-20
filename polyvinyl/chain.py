@@ -1,6 +1,6 @@
 import os
-from ..utils import identifier
-from ..utils.exception import \
+from .utils import identifier
+from .utils.exception import \
     PolyVinylNotOk, PolyVinylKnockout, PolyVinylError, PolyVinylReChain
 
 class Inst(object):

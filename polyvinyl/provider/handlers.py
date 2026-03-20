@@ -1,10 +1,10 @@
 import bcrypt
 from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain
-from ..utils import lin, user, session, templ, form, token, chain
+from .. import chain, lin
+from ..utils import user, session, templ, form, token
 from ..utils.maps import mime_map
 from smtplib import SMTP
-import smtplib
 
 
 def _map(req, ident, data, dest):

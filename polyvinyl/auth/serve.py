@@ -1,9 +1,10 @@
 import socketserver, argparse, json, os, select, stat
 
+from . import handlers
+from .. import lin
 from ..utils.log import GetLogger
 from ..utils.exception import PolyVinylNotOk
-from ..utils import identifier, lin
-from . import handlers
+from ..utils import identifier
 
 STATE_LENGTH = "length"
 STATE_KEY = "key"

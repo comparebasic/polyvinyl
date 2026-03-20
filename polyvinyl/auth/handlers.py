@@ -1,7 +1,7 @@
 import os, bcrypt, time
 from datetime import datetime
+from .. import lin
 from ..utils.exception import PolyVinylNotOk
-from ..utils import lin
 from ..utils import token
 from .. import SEEK_END, SEEK_CUR, SEEK_START
 

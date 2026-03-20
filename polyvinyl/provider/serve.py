@@ -1,13 +1,13 @@
 import argparse, json, urllib, traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+from . import handlers
+from .. import chain
 from ..utils.maps import http_messages
-
 from ..utils.log import GetLogger
 from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain, PolyVinylNotFound
-from ..utils import templ, identifier, form, session, chain
-from . import handlers
+from ..utils import templ, identifier, form, session
 
 
 class PolyVinylHandler(BaseHTTPRequestHandler):
@@ -18,6 +18,7 @@ class PolyVinylHandler(BaseHTTPRequestHandler):
         self.query_data = {}
         self.cookie = {}
         self.session = {}
+        self.role = {} 
         self.content = ""
         self.code = 0 
         return super().__init__(*args, **kwargs)

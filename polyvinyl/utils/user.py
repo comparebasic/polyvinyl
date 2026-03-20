@@ -1,7 +1,6 @@
 import os, urllib, random, bcrypt
-from ..utils import lin
-from .exception import PolyVinylNotOk 
-from .. import SALT_BYTES, SEEK_END, SEEK_CUR, SEEK_START
+from .. import lin, SALT_BYTES, SEEK_END, SEEK_CUR, SEEK_START
+from ..utils.exception import PolyVinylNotOk 
 
 def get_userdir(config, email_token):
     return os.path.join(config["dirs"]["user-data"], email_token)
