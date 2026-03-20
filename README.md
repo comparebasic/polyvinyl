@@ -44,7 +44,10 @@ Such that `content=dashboard.html@page` loads the `content` function to render
 the `dashboard.html` file in the `page` folder.
 
 Some functions raise exceptions which tell the server to move on to the next
-series of identifiers, serving essentially as an if/else statement.
+series of identifiers, serving essentially as an if/else statement. Some
+functions also generate a new list of identifiers, by raising the
+`PolyVinylReChain` exception, which allows pages to include content from other
+places defined for a specific user.
 
 ```python
     "data_eq=on@register"
