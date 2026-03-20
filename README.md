@@ -53,7 +53,8 @@ series of identifiers, serving essentially as an if/else statement.
 
 This is why the configuration is so dense in exchange for a complete view of
 the system in one configuration file. This is also how the system can be used
-to composes web services.
+to compose web services, manually or through a user-interface that generates a
+configuration file.
 
 # Services
 
