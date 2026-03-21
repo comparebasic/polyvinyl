@@ -1,30 +1,17 @@
 import socketserver, argparse, json, os, select, stat
 
-from . import handlers
+from . import handlers, cli
 from .. import lin
 from ..utils.log import GetLogger
 from ..utils.exception import PolyVinylNotOk
 from ..utils import identifier
 
-STATE_LENGTH = "length"
-STATE_KEY = "key"
-STATE_VALUE = "value"
-states = [STATE_LENGTH, STATE_KEY, STATE_VALUE]
-
 class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
-        config = self.server.config
-
-        more = True
-        state = STATE_LENGTH
-        content_state = STATE_KEY
-        first = None
-
         items = []
-
         content = b""
-        while more != False:
+        while True:
             try:
                 content = lin.read_next(self.rfile)
             except (ValueError, TypeError) as err:
@@ -39,17 +26,18 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
         if len(items) == 0:
             self.respond("no", "no items recieved", "")
 
-        if config["type"] == "sasl":
-            self.sasl(items)
-        else:
-            self.auth(items)
-
-
-    def sasl(self, items):
-        self.server.logger.log("Sasl Items {}".format(items))
+        self.auth(items)
 
 
     def auth(self, items):
+        if self.server.key:
+            try:
+                lin.verify(self.server.key, items)
+            except Exception as err:
+                self.server.logger.log("Invalid message details", err.args)
+                self.respond("no", "Invalid message details", "")
+                return
+
         data = lin.arr_to_dict(items)
         if not data.get("ident"):
             raise PolyVinylNotOk("Ident not found")
@@ -89,6 +77,9 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
     def __init__(self, config, logger, _bind_and_activate=True):
         self.config = config
         self.logger = logger
+        self.key = None
+        if config.get("auth-key"):
+            self.key = lin.load_key(config["auth-key"])
         super().__init__(config["auth-socket"], PolyVinylAuthHandler, True)
         perms = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
         os.chmod(config["auth-socket"], perms)

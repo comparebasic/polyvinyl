@@ -20,9 +20,9 @@
             ["get", "map=action/path@req", "set_query", "content=login-form.format@page", "end"],
             ["post", "map=email,auth-method,password?,fullname?,register?@form", "set_query",
                 ["data_eq=password@auth-method", [
-                    ["data_eq=on@register", "register", "pw_set"],
-                    ["data_neq=on@register", "pw_auth"],
-                        "session_start", "redir=/auth/dashboard", "end"]
+                        ["data_eq=on@register", "register", "pw_set", "session_start", "redir=/auth/dashboard", "end"],
+                        ["data_neq=on@register", "pw_auth", "session_start", "redir=/auth/dashboard", "end"]
+                    ]
                 ],
                 ["data_eq=send-email@auth-method", 
                     ["data_eq=on@register", "register"],
@@ -81,5 +81,7 @@
     "system-email": "noreply@cb-local",
     "brand": "Authdinger",
     "url": "http://localhost:3000",
-    "smtp": "localhost"
+    "smtp": "localhost",
+    "provider-key": "/basic/fixtures/bytes32.b64",
+    "auth-key": "/basic/fixtures/bytes32.b64"
 }

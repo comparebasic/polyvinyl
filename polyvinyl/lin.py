@@ -1,25 +1,9 @@
-import socket
+import base64, hmac, hashlib
 from . import BSTREAM_MAX, SEEK_END, SEEK_CUR, SEEK_START
 from .utils import identifier
 from .utils.exception import PolyVinylError, PolyVinylNotOk
 from .utils import config as config_d
 
-def query_path(path, details):
-    try:
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect(path) 
-    except FileNotFoundError as err:
-        raise PolyVinylError(err.args[0], err)
-
-    send(sock, details)
-    answer = read_next(sock) 
-    reason = read_next(sock)
-    if answer != b"ok":
-        sock.close()
-        raise PolyVinylNotOk("Invalid", reason)
-
-    sock.close()
-    return reason
 
 def quote(s):
     b = bytearray()
@@ -185,3 +169,32 @@ def arr_to_dict(arr):
         data[arr[-1]] = True
 
     return data
+
+
+def load_key(path):
+    with open(path, "rb") as f:
+        return base64.b64decode(f.read())
+
+
+def get_sig(key, items):
+    h = hmac.new(key, b"", hashlib.sha256)
+    for v in items:
+        if isinstance(v, (str)):
+            v = v.encode("utf-8")
+        print(repr(v))
+        h.update(v)
+    return h.digest()
+
+
+def verify(key, items):
+    print("Verifiing {}".format(items))
+    if items[0] == b"aim":
+        if items[-2] != b"end-sig":
+           raise ValueError("Verification method not found", items[1]) 
+
+        if items[-1] != get_sig(key, items[2:-2]):
+           raise ValueError("Verification failed", items[1]) 
+    else:
+       raise ValueError("Verification header not found", items[1]) 
+
+    print("Verified! {}".format(items))

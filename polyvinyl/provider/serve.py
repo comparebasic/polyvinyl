@@ -2,7 +2,7 @@ import argparse, json, urllib, traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from . import handlers
-from .. import chain
+from .. import chain, lin
 from ..utils.maps import http_messages
 from ..utils.log import GetLogger
 from ..utils.exception import \
@@ -122,5 +122,8 @@ class PolyVinylProviderServer(HTTPServer):
         self.config = config
         self.logger = logger
         self.handlers = handlers
+        self.key = None
+        if config.get("provider-key"):
+            self.key = lin.load_key(config["provider-key"])
         return super().__init__(address, PolyVinylHandler)
 

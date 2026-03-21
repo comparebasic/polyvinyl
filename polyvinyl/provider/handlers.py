@@ -3,6 +3,7 @@ import bcrypt, sys
 from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain
 from .. import chain, lin
+from ..auth import cli
 from ..utils import user, session, templ, form, token, api as api_d
 from ..utils.maps import mime_map
 from smtplib import SMTP
@@ -182,12 +183,11 @@ def pw_auth(req, ident, data):
         data["email-token"] = lin.quote(data["email"]).decode("utf-8")
         password_hash = user.pw_hash(req, config, data)
 
-        lin.query_path(config["auth-socket"], (
+        cli.query_path(config["auth-socket"], req.server.key, (
             "ident",     
                 "pw_auth={}@email".format(data["email-token"]),
             "password-hash",
-                password_hash, 
-            ""
+                password_hash
         ))
     else:
         raise PolyVinylNotOk("No Auth Service Defined")
@@ -199,12 +199,12 @@ def token_consume_code(req, ident, data):
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
 
-        lin.query_path(config["auth-socket"], (
+        cli.query_path(config["auth-socket"], req.server.key, (
             "ident",     
                 "token_consume_code={}@email".format(email_token),
             "six-code",
-                data["six-code"], 
-            ""))
+                data["six-code"]
+            ))
 
         del data["six-code"]
     else:
@@ -217,12 +217,12 @@ def token_consume(req, ident, data):
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
 
-        lin.query_path(config["auth-socket"], (
+        cli.query_path(config["auth-socket"], req.server.key, (
             "ident",     
                 "token_consume={}@email".format(email_token),
             "token",
-                data["token"], 
-            ""))
+                data["token"],
+            ))
 
         del data["token"]
     else:
@@ -266,12 +266,11 @@ def pw_set(req, ident, data):
             del data["password"]
 
         email_token = lin.quote(data["email"]).decode("utf-8")
-        lin.query_path(config["auth-socket"], (
+        cli.query_path(config["auth-socket"], req.server.key, (
             "ident", 
                 "pw_set={}@email".format(email_token),
             "password-hash",
                 data["password-hash"], 
-            ""
         ))
 
         del data["password-hash"]
@@ -289,10 +288,10 @@ def register(req, ident, data):
 
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
-        lin.query_path(config["auth-socket"], (
+        cli.query_path(config["auth-socket"], req.server.key (
             "ident", 
                 "register={}@email".format(email_token),
-            ""))
+            ))
 
         data["email-token"] = email_token
     else:
@@ -331,10 +330,9 @@ def get_token(req, ident, data):
 
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
-        tk = lin.query_path(config["auth-socket"], (
+        tk = cli.query_path(config["auth-socket"], req.server.key, (
             "ident", 
                 "token_create={}@email".format(email_token),
-            ""
         ))
 
         data["token"] = tk.decode("utf-8")
