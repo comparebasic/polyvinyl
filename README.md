@@ -82,7 +82,9 @@ processes that can be run under seperate system users or on seperate machines.
 While centralizing sensative data. Using the `Lin` format that you can read
 more about [here](doc/lin.md).
 
-Found in the [auth](polyvinyl/auth) folder of the source folder.
+Code can be found in the [auth](polyvinyl/auth) folder of the source folder.
+
+More on the Auth service [here](doc/auth.md).
 
 ## Provider 
 
