@@ -81,6 +81,6 @@ passed to the Auth service. This limits the time that the raw password exists
 while ensuring that the raw password never leaves the memory space of the
 application server.
 
-For now, that transmission of the password has is unecrypted but encapsulated
+For now, that transmission of the password hash is unecrypted but encapsulated
 between the TCP/IP stream of the unix socket between the application and
 authentication server.
