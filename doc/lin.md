@@ -19,7 +19,7 @@ can be though of as:
 
 Where "Ident" is 5 bytes long and "register=test%40cb%2elocal@email" is 32 bytes long.
 
-# `Lin` streaming vs file storage
+## `Lin` streaming vs file storage
 
 `Lin` has two variants, one for streaming and one for persistance. The
 difference is that `Lin` on disk puts length values after the content so that
@@ -42,3 +42,5 @@ can be though of as:
 ```
      0, Ident, 5, register=test%40cb%2elocal@email, 32
 ```
+
+
