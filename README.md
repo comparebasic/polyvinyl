@@ -94,8 +94,10 @@ Found in the [provider](polyvinyl/provider) folder of the source folder.
 # Spatial Oriented Programming
 
 This is a discipline of creating small parts that get routed around the
-application almost like spaces. It has a strong focus on keeping behaviour in
-lists and configuration that can be read and discussed at a high level.
+application almost like spaces. It is focus thinking about software behaviour
+in lists, queues, and combinable components that create pipelines. The
+pipeline's control is expected to be visible through configuration that can be
+authored or user-generated.
 
 # `Chain` Configuration Syntax
 
@@ -161,5 +163,9 @@ See more about what these identifiers mean in the
 PolyVinyl is presently in development with the hope that it can launch demos
 and become thoroughly tested in the near future.
 
+
 (c) Copyright 2026 - Compare Basic Incorporated
 See [licence](LICENSE) for details.
+
+PolyVinyl is a product from Compare Basic Incorporated see
+[comparebasic.com](https://comparebasic.com) for details.
