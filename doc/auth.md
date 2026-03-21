@@ -34,3 +34,6 @@ Here is the action message (with ... for password and signature values):
 ```
     \{0}\{3}aim\{0}\x0bhmac-concat\{0}\{5}ident\{0}\x1fpw_auth=test%40cb%2elocal@email\{0}\rpassword-hash\{0}\{62}...\{0}\{7}end-sig\{0}\{32}...\{0}\{0}
 ```
+
+Note: "aim" is a term to indicate that the protocol is being defined, in this
+service the next string defines how the rest of communication should proceed.
