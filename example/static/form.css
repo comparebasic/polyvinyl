@@ -144,8 +144,8 @@ label input + span.label-text {
     width: 120px;
 }
 
-input[type=checkbox]:not(:checked) + span + .optional,
-input[type=radio]:not(:checked) + span + .optional {
+input[type=checkbox]:not(:checked) + span + br + .optional,
+input[type=radio]:not(:checked) + span + br + .optional {
     display: none;
 }
 

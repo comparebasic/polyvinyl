@@ -45,7 +45,7 @@
 
     function validateKeyPress(e){
         if(this._validation){
-            const broke = _validateRules(this.value, this._validation.rules);
+            const broke = _validateRules(this.value, this._val.rules);
             if(broke === -1){
                 this.parentNode.classList.add("valid");
                 this.parentNode.classList.remove("invalid");
@@ -55,40 +55,57 @@
         }
     }
 
-    function validateValue(e){
-        if(this._validation){
-            const broke = _validateRules(this.value, this._validation.rules);
-            if(broke == -1){
-                this.parentNode.classList.remove("invalid");
-            }else{
-                this.parentNode.classList.add("invalid");
-                if(this._desc_el){
-                    const length = this._desc_el.childNodes.length;
-                    for(let i = 0; i < length; i++){
-                        const node = this._desc_el.childNodes.item(i);
-                        if(i == broke){
-                            console.log("broke" + broke, node);
-                            console.log(this._validation);
-                            console.log(this._desc_el.childNodes);
-                            node.classList.add("broken"); 
-                        }else{
-                            node.classList.remove("broken"); 
+    function validateLast(e){
+        if(this._validation && typeof this._validation.form._latest !== "undefined" && this._validation.form._latest !== this){
+            const node = this._validation.form._latest;
+            console.log(node);
+
+            if(node._val){
+                const broke = _validateRules(node.value, node._val.rules);
+                if(broke == -1){
+                    node.parentNode.classList.remove("invalid");
+                }else{
+                    node.parentNode.classList.add("invalid");
+                    if(node._desc_el){
+                        const length = node._desc_el.childNodes.length;
+                        for(let i = 0; i < length; i++){
+                            const desc = node._desc_el.childNodes.item(i);
+                            if(i == broke){
+                                desc.classList.add("broken"); 
+                            }else{
+                                desc.classList.remove("broken"); 
+                            }
                         }
                     }
                 }
             }
         }
+        this._validation.form._latest = this;
     }
 
     function register(jsid, validation){
+         validation.form = document.getElementById(jsid);
          this.elems[jsid] = {
-              validation
+              validation,
          }
-         const form = document.getElementById(jsid);
-         const inputs = form.getElementsByTagName("INPUT");
-         const l = inputs.length;
+
+         const buttons = validation.form.getElementsByTagName("BUTTON");
+         let l = buttons.length;
+         for(let i = 0; i < l; i++){
+              const btn = buttons[i];
+              btn.addEventListener("focus",validateLast);
+              btn.addEventListener("click",validateLast);
+         }
+
+         const inputs = validation.form.getElementsByTagName("INPUT");
+         l = inputs.length;
          for(let i = 0; i < l; i++){
               const inp = inputs[i];
+
+              inp._validation = validation;
+              inp.addEventListener("focus",validateLast);
+              inp.addEventListener("click",validateLast);
+
               const name = inp.getAttribute("name");
               if(validation[name]){
                   val = validation[name];
@@ -97,8 +114,7 @@
                           val.rules[ii] = new RegExp(val.rules[ii]);
                       }
                   }
-                  inp._validation = val;
-                  inp.addEventListener("focusout",validateValue);
+                  inp._val = val;
                   inp.addEventListener("keyup",validateKeyPress);
 
                   const desc = document.createElement("P");
@@ -119,14 +135,15 @@
                         if(node && node.classList.contains("eye")){
                             (function(pwinp){
                                 node.onclick = function(){
+                                    console.log("Oop");
                                     if(pwinp.classList.contains("visible-password")){
                                         pwinp.classList.remove("visible-password");
+                                        this.classList.remove("active");
                                         pwinp.setAttribute("type", "password");
-                                        this.classList.add("active");
                                     }else{
                                         pwinp.classList.add("visible-password");
+                                        this.classList.add("active");
                                         pwinp.setAttribute("type", "text");
-                                        this.classList.remove("active");
                                     }
                                 }
                             })(inp);
