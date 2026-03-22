@@ -111,8 +111,10 @@ Here is an example configuration for the routes of the login page:
         ["get", "idents=login.idents@page", "end"],
         ["post", "injest=login.json@page", 
             ["data_eq=password@auth-method", [
-                    ["data_eq=on@register", "register", "pw_set", "session_start", "redir=/auth/dashboard", "end"],
-                    ["data_neq=on@register", "pw_auth", "session_start", "redir=/auth/dashboard", "end"]
+                    ["data_eq=on@register", "register", "pw_set", 
+                        "session_start", "redir=/auth/dashboard", "end"],
+                    ["data_neq=on@register", "pw_auth", 
+                        "session_start", "redir=/auth/dashboard", "end"]
                 ]
             ]
         ],
