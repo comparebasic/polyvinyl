@@ -1,4 +1,6 @@
-import urllib
+import urllib, json
+
+from ..utils import identifier
 
 def parseFormData(s):
     data = {}
@@ -38,12 +40,74 @@ def compare_digest(config, ident, form, html, fields):
     # compare to digets on disk
 
 
-def gen_from(config, ident, content):
+def render_item(ident, optional=False, content=""):
+    name = ident.location
+    value = None 
+    if ident.tag == "radio" or ident.tag == "button":
+        parts = name.split("/")
+        if len(parts) == 2:
+            name = parts[1]
+            value = parts[0]
+
+    if ident.tag == "button":
+        return "<button type=\"submit\" name=\"{}\" value=\"{}\">{}</button>".format(
+            " name={}".format(name) if name else "",
+            " value={}".format(value) if value else "",
+            ident.name)
+
+    else if ident.tag == "input":
+        return "<label{}><span class=\"label-text\">{}</span><input type=\"{}\" name=\"{}\"{} />{}</label>".format(
+            " class=\"optional\"" if optional else "",
+            ident.name,
+            ident.tag,
+            name,
+            " value=\"{}\"".format(value) if value else "",
+            content)
+    else:
+        return "<label{}><input type=\"{}\" name=\"{}\"{} /><span class=\"label-text\">{}</span>{}</label>".format(
+            " class=\"optional\"" if optional else "",
+            ident.tag,
+            name,
+            " value=\"{}\"".format(value) if value else "",
+            ident.name,
+            content)
+
+
+def rev_gen_loop(ident, chain, content=""):
+    top = len(chain)-1
+    for i, v in enumerate(reversed(chain)):
+        ident = identifier.Ident(v)
+        content = render_item(ident, i < top, content)
+
+    return content
+
+
+def gen_loop(req, ident, chain, stream, data):
+    #config = req.server.config
+    print("Chain Loop")
+    for v in chain:
+        if isinstance(v, (str)):
+            ident = identifier.Ident(v)
+            match ident.tag:
+                case "input" | "checkbox" | "button" | "option" | "radio": 
+                    print(render_item(ident))
+                case "content":
+                    print(ident.ident)
+        elif isinstance(v, (list)):
+            content = rev_gen_loop(ident, v)
+            print(content)
+
+
+def gen_html(req, ident, content, stream):
     # compare form json with cached form html
         # produce if mismatch
     # generate fields.json
         # produce if mismatch
-    pass
+
+    data = {}
+
+    js = json.loads(content) 
+    gen_loop(req, ident, js["idents"], stream, data)
 
 
 def process_form(req, ident, data):

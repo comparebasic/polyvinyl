@@ -1,5 +1,6 @@
 {
-    "items": [
+    "idents": [
+        "content=questionaire-intro.html@inc",
         "section=A few questions about how widely to circulate your donation. Who are you willing to share your name with.@Privacy",
         "input=Other Donors/donors,Other potential donars,Publicly on comparebasic.com@checkbox,",
         "section=An explanation of a reporting criteria that effects the timing of your stock allocation@Allocation",
@@ -12,5 +13,8 @@
         "question=By entering your name you are making the answers to these questions as statements to Compare Basic Incorporated.",
         "input=Signature@text",
         "input=Submit@button"
-    ]
+    ],
+    "fields": {
+
+    }
 }
