@@ -49,7 +49,6 @@ def do_chain(req, chain, data):
 
         elif isinstance(h, (Inst)):
             req.server.logger.log("Handle {}".format(h))
-            print(h.func)
             try:
                 h.func(req, h.ident, data)
             except PolyVinylReChain as re:

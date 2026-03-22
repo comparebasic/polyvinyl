@@ -4,27 +4,35 @@ from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain
 from .. import chain, lin
 from ..auth import cli
-from ..utils import user, session, templ, form as form_d, token, api as api_d
+from ..utils import user, session, templ, form as form_d, token, api as api_d, config as config_d
 from ..utils.maps import mime_map
 from smtplib import SMTP
 
 
-def _map(req, ident, data, dest):
+from ..utils.form import injest
+
+def api(req, ident, data):
+    "Returns data about the handlers and the configuration"
     config = req.server.config
+    if ident.name == "handlers":
+        req.content += api_d.handlers(req, sys.modules.get(__name__))
 
-    kv = {}
-    for field in ident.name.split(","):
-        parts = field.split("/")
-        key = parts[0]
-        if len(parts) == 1:
-            val_key = parts[0]
-        elif len(parts) == 2:
-            val_key = parts[1]
-        else:
-            raise PolyVinylError("Unparsable fields definition", ident.name)
+    if ident.name == "config":
+        req.content  += api_d.config(req, sys.modules(__name__))
 
-        kv[key] = val_key
+def end(req, ident, data):
+    "Set the request complete and ready to respond\n"
+    req.done = True
+    raise PolyVinylKnockout()
 
+
+def map(req, ident, data):
+    "Map key/value pairs to the `data` object\n"
+    "<name> can be a comma seperated list of slash seperated key/value pairs \n"
+    "<location> is the object to pull from\n"
+
+    config = req.server.config
+    kv = maps.kv_from_ident(ident) 
 
     match ident.location:
         case "req":
@@ -48,42 +56,8 @@ def _map(req, ident, data, dest):
                 case "config":
                     source = config 
 
-            for k,v in kv.items():
-                if v.endswith("?"):
-                    v = v[:-1]
-                    if k.endswith("?"):
-                        k = k[:-1]
-                    dest[k] = source.get(v)
-                else:
-                    if not source.get(v):
-                        raise PolyVinylKnockout("Field not found for query {}".format(ident))
-                    dest[k] = source[v]
-
+    maps.map(kv, source, data)
     req.server.logger.log("After Map {} {}".format(ident, dest))
-
-
-def api(req, ident, data):
-    "Returns data about the handlers and the configuration"
-    config = req.server.config
-    if ident.name == "handlers":
-        print(api_d.handlers)
-        print(__name__)
-        req.content += api_d.handlers(req, sys.modules.get(__name__))
-
-    if ident.name == "config":
-        req.content  += api_d.config(req, sys.modules(__name__))
-
-def end(req, ident, data):
-    "Set the request complete and ready to respond\n"
-    req.done = True
-    raise PolyVinylKnockout()
-
-
-def map(req, ident, data):
-    "Map key/value pairs to the `data` object\n"
-    "<name> can be a comma seperated list of slash seperated key/value pairs \n"
-    "<location> is the object to pull from\n"
-    _map(req, ident, data, data)
 
 
 def set_query(req, ident, data):
@@ -128,7 +102,7 @@ def content(req, ident, data):
 
 def form(req, ident, data):
     config = req.server.config
-    path, ext = templ.get_path_ext(config, ident)
+    path, ext = config_d.get_path_ext(config, ident)
     if ext == "json":
         with open(path, "r") as f:
             config_data = json.loads(f.read())

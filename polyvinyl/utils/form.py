@@ -1,17 +1,73 @@
-import urllib, json
+import urllib, json, os
 
-from ..utils import identifier
+from .. import lin
+from ..utils import identifier, config as config_d
+from ..utils.exception import PolyVinylNotOk
+
+def injest(req, ident, data):
+    config = req.server.config
+
+    origin = req.form_data
+
+    kv = {}
+    deps = {}
+    source = {}
+
+    fields = {}
+    path, ext = config_d.get_path_ext(config, ident)
+    if ext == "json":
+        with open(path, "r") as f:
+            js = json.loads(f.read())
+            fields.update(js["injest"])
+    
+    try:
+        for k,v in fields.items():
+            if isinstance(v, (str)):
+                ident = identifier.Ident(v)
+                match ident.tag:
+                    case "depends":
+                        deps[(ident.location,ident.name)] = (k, origin[k])
+                    case "process":
+                        match ident.location:
+                            case "quote":
+                                value =lin.quote(origin[k]).decode("utf-8")
+                            case "lower":
+                                value = origin[k].lower()
+                            case "upper":
+                                value = origin[k].upper()
+
+                        if ident.name:
+                            key = ident.name
+                        else:
+                            key = k
+
+                        data[key] = value
+                        data[k] = origin[k]
+
+            elif isinstance(v, (bool)) and k:
+                data[k] = origin[k]
+
+        for dep,val in deps.items():
+            k,v = dep
+            if origin.get(k) and origin[k] == v:
+                key, value = val
+                data[key] = value
+
+        req.server.logger.log("Data after injest {}".format(data))
+
+    except (KeyError, ValueError) as err:
+        req.server.logger.warn(err)
+        raise PolyVinylNotOk(err)
+        
 
 def parseFormData(s):
     data = {}
     for x in s.split("&"):
         pairs = x.split("=", 2)
-        print(pairs)
         if len(pairs) == 2:
             k = pairs[0]
             v = pairs[1]
             data[k] = urllib.parse.unquote_plus(v, encoding=None, errors=None)
-    print("{} -> {}".format(s, data))
     return data
 
 def toQuery(config, data):
@@ -81,12 +137,9 @@ def render_item(ident, optional=False, content=""):
 def rev_gen_loop(ident, chain, data, content=""):
     top = len(chain)-1
     for i, v in enumerate(reversed(chain)):
-        print(v)
-        print(content)
         if isinstance(v, (list)):
             content += gen_loop(ident, data, v)
         else:
-            print(v)
             ident = identifier.Ident(v)
             content = render_item(ident, i < top, content)
 
@@ -107,6 +160,7 @@ def gen_loop(ident, data, chain):
             content += rev_gen_loop(ident, v, data)
 
     return content
+
 
 def gen_script(ident, form_jsid, validation):
     content = "<script type=\"text/javascript\">"

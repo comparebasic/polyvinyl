@@ -181,13 +181,11 @@ def get_sig(key, items):
     for v in items:
         if isinstance(v, (str)):
             v = v.encode("utf-8")
-        print(repr(v))
         h.update(v)
     return h.digest()
 
 
 def verify(key, items):
-    print("Verifiing {}".format(items))
     if items[0] == b"aim":
         if items[-2] != b"end-sig":
            raise ValueError("Verification method not found", items[1]) 
@@ -196,5 +194,3 @@ def verify(key, items):
            raise ValueError("Verification failed", items[1]) 
     else:
        raise ValueError("Verification header not found", items[1]) 
-
-    print("Verified! {}".format(items))

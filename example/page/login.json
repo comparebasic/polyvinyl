@@ -11,10 +11,10 @@
     ],
     "action":"/auth/login",
     "injest": {
-        "email": "quote=email-token",
+        "email": "process=email-token@quote",
         "auth-method": true,
-        "password": "on@auth-method",
-        "fullname": "on@register"
+        "password": "depends=password@auth-method",
+        "fullname": "depends=on@register"
     },
     "validation":{
         "password":{

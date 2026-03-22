@@ -17,8 +17,8 @@
         "/ui/ui.js": ["content=ui.js@ui"],
         "/auth/": ["redir=/auth/login", "end"],
         "/auth/login": [
-            ["get", "map=action/path@req", "set_query", "idents=login.idents@page", "end"],
-            ["post", "map=email,auth-method,password?,fullname?,register?@form", "set_query",
+            ["get", "idents=login.idents@page", "end"],
+            ["post", "injest=login.json@page", "set_query",
                 ["data_eq=password@auth-method", [
                         ["data_eq=on@register", "register", "pw_set", "session_start", "redir=/auth/dashboard", "end"],
                         ["data_neq=on@register", "pw_auth", "session_start", "redir=/auth/dashboard", "end"]
@@ -27,9 +27,9 @@
                 ["data_eq=send-email@auth-method", 
                     ["data_eq=on@register", "register"],
                         "get_token", "map=brand,url@config", "set_token_url=/auth/email-sent", "email=auth-token-email@emails",
-                            "content=email-sent.format@page", "end"]
-            ],
-            ["idents=login.idents@page", "end"]
+                            "content=email-sent.format@page", "end"],
+                ["idents=login.idents@page", "end"]
+            ]
         ],
         "/auth/dashboard": [
             ["get", "session_open", "idents=dashboard.idents@page", "end"],
