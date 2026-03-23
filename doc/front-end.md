@@ -12,7 +12,7 @@ The frontned framework is a small set of JavaScript utilities that follow the co
 
 The configuration file is discussed in the [ui](/doc.ui.md) section of the documentation, which discusses the backend HTML generation as well.
 
-## JavasScript Form Binding - `form.js`
+## JavaScript Form Binding - `form.js`
 
 The JavaScript loads up with the page and is then called from a script just below each HTML Form element.
 
