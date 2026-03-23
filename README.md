@@ -1,6 +1,6 @@
 # PolyVinyl
 
-This is a task-management and web application framework based on the following things:
+This is a task-management and full-stack web application framework based on the following things:
 
 - Server and Handler files for the two services included: `Auth` and `Provider`.
 - Configuration pipeline known as a `Chain` based on Spatial Oriented Programming.
@@ -13,6 +13,7 @@ This system is presently written in Python 3 and available under a 3-clause BSD 
 Architectural Diagram:
 
 ![Architectural Diagram](/doc/polyvinyl-arch.svg)
+
 
 # Convention
 
@@ -67,6 +68,19 @@ This is why the configuration is so dense in exchange for a complete view of
 the system in one configuration file. This is also how the system can be used
 to compose web services, manually or through a user-interface that generates a
 configuration file.
+
+
+# Front End
+
+The PolyVinyl UI includes a json format for creating forms that both validate
+on the backend, generate form HTML and include information to wire up
+user-interface events using a client side JavaScript framework.
+
+More details about the JavaScript/Python that generates the front-end can be found:
+
+- [Python generation](/doc/ui.md)
+- [JavaScript frontend](/doc/front-end.md)
+
 
 # Services
 
@@ -159,12 +173,6 @@ a webpage.
 
 See more about what these identifiers mean in the
 [Identifier](/doc/identifier.md) documentation.
-
-# Front End
-
-The PolyVinyl UI includes a json format for creating forms that both validate on the backend, generate form HTML and include information to wire up user-interface events using a client side JavaScript framework.
-
-More details about the front-end can be found [here](/doc/front-end.md)
 
 
 # Python3 packages used

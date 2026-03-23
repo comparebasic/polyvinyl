@@ -10,7 +10,7 @@ The frontned framework is a small set of JavaScript utilities that follow the co
 
 ## Python Form Module - `utils.form` 
 
-The configuration file is discussed in the [ui](/doc.ui.md) section of the documentation, which discusses the backend HTML generation as well.
+The configuration file is discussed in the [ui](/doc/ui.md) section of the documentation, which discusses the backend HTML generation as well.
 
 ## JavaScript Form Binding - `form.js`
 
