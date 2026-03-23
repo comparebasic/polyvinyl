@@ -28,7 +28,7 @@ bottom of this file.
     const noop = function(){}
 
     function _validateRules(content, rules){
-        /* run through the regex array, this is valuable because the
+        /* Run through the regex array, this is valuable because the
          * descriptions have a corresponding array of elements that can be
          * styled to indicate failure in those matches */
         let i = 0
@@ -178,8 +178,10 @@ bottom of this file.
     }
 
     function validateForm(){
-        /* Loop through the inputs and verify if they are either: 1. required
-         * 2. visible 3. invalid
+        /* Loop through the inputs and verify if they are either:
+         * 1. required
+         * 2. visible
+         * 3. invalid
          *
          * If all three are true the form is not valid, but if a non-required
          * or non-visible input is not valid that does not invalidate the form 

@@ -110,3 +110,7 @@ been set as the HTML Form's `id` attribute.
     }
 }
 ```
+
+## The Front End
+
+Details about the FrontEnd can be found [here](/doc/from-end.md)

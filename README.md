@@ -164,7 +164,7 @@ See more about what these identifiers mean in the
 
 The PolyVinyl UI includes a json format for creating forms that both validate on the backend, generate form HTML and include information to wire up user-interface events using a client side JavaScript framework.
 
-More details about the front-end can be found [here](/doc/ui.md)
+More details about the front-end can be found [here](/doc/front-end.md)
 
 
 # Python3 packages used
