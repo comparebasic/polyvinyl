@@ -185,7 +185,7 @@ def gen_loop(ident, data, chain):
 
 def gen_script(ident, form_jsid, validation):
     content = "<script type=\"text/javascript\">"
-    content += "window._polyvinyl.form.register(\"{}\", {})".format(
+    content += "window._polyvinyl.Form.register(\"{}\", {})".format(
         form_jsid,
         json.dumps(validation)
     )

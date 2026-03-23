@@ -11,10 +11,7 @@
         "ui-page": "ui/"
     },
     "routes": {
-        "/ui/api/handlers": ["api=handlers"],
-        "/ui/ui.css": ["content=ui.css@ui"],
-        "/ui/editor": ["content=editor.html@ui-page"],
-        "/ui/ui.js": ["content=ui.js@ui"],
+        "/": ["redir=/auth/login", "end"],
         "/auth/": ["redir=/auth/login", "end"],
         "/auth/login": [
             ["get", "idents=login.idents@page", "end"],
@@ -48,9 +45,13 @@
             ["post", "map=email,six-code@form", "token_consume_code", "session_start", "redir=/auth/dashboard","end"],
             ["content=email-sent.format@page", "end"]
         ],
+        "/ui/api/handlers": ["api=handlers"],
+        "/ui/ui.css": ["content=ui.css@ui"],
+        "/ui/editor": ["content=editor.html@ui-page"],
+        "/ui/ui.js": ["content=ui.js@ui"],
         "/static/style.css": ["content=style.css@static"],
         "/static/form.css": ["content=form.css@static"],
-        "/static/form.js": ["content=form.js@static"],
+        "/static/form.js": ["content=form.js@ui"],
         "/not-found": ["content=not-found.html@page"],
         "/error": ["content=error.format@page"]
     },
