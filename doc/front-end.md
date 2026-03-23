@@ -3,22 +3,22 @@
 The frontned framework is a small set of JavaScript utilities that follow the configuration json for the backend to create interactive websites.
 
 
-# Components of the FrontEnd
+## Components of the FrontEnd
 
 - [utils.form](/polyvinyl/utils/form.py) (python) is the Python module that interprets configuration and generates the HTML and JavaScript bindings.
 - [ui/form.js](/ui/form.js) is the JavaScript utility that takes the configuration and makes it interactive
 
-# Python Form Module - `utils.form` 
+## Python Form Module - `utils.form` 
 
 The configuration file is discussed in the [ui](/doc.ui.md) section of the documentation, which discusses the backend HTML generation as well.
 
-# JavasScript Form Binding - `form.js`
+## JavasScript Form Binding - `form.js`
 
 The JavaScript loads up with the page and is then called from a script just below each HTML Form element.
 
-## Functions of `form.js`
+### Functions of `form.js`
 
-## Main Closure
+#### Main Closure
 
 ```JavaScript
 (function(){
@@ -47,7 +47,7 @@ webpage.
 It is one large self-executing closer. The exposed objects are declared at the
 bottom of this file.
 
-## _validateRules
+#### _validateRules
 
 ```JavaScript
 function _validateRules(content, rules){
@@ -58,7 +58,7 @@ descriptions have a corresponding array of elements that can be
 styled to indicate failure in those matches
 
 
-## Show Description (errors)
+#### Show Description (errors)
 
 ```JavaScript
 function showDesc(broke){
@@ -68,7 +68,7 @@ Highlihgt the specific description responsible that has violated a
 validation match 
 
 
-## Validate Rules
+#### Validate Rules
 
 ```JavaScript
 function validateRules(e, fully){
@@ -76,7 +76,7 @@ function validateRules(e, fully){
 
 Validate a form input that has pattern matching rules
 
-## Validate Values
+#### Validate Values
 
 ```JavaScript
 function validateValue(e, fully){
@@ -84,7 +84,7 @@ function validateValue(e, fully){
 
 Validate a form input that does not have pattern matching rules
 
-## Validate CheckBoxes and Radio Groups 
+#### Validate CheckBoxes and Radio Groups 
 ```
     function validateChecked(e, fully){
 ```
@@ -92,7 +92,7 @@ Validate a form input that does not have pattern matching rules
 Validate a checkbox or radio group 
 
 
-## Validate Latest
+#### Validate Latest
 
 ```JavaScript
 function validateLatest(e){
@@ -104,7 +104,7 @@ are not interrupted with suggestions or errors before
 they have had a chance to finish filling in an input.
 
 
-## Check Visibliity (for optional inclusion in form validity)
+#### Check Visibliity (for optional inclusion in form validity)
 
 ```JavaScript
 function checkVisible(){
@@ -115,7 +115,7 @@ that only visible elements are considered for validation.
 This is becuase optional elements that are hidden do
 not need to be considered 
 
-## Validate Button
+#### Validate Button
 
 ```JavaScript
 function validateButton(e){
@@ -126,7 +126,7 @@ preventing the event from submitting the page unless the form
 is ready
          
 
-## Validate Form
+#### Validate Form
 
 ```JavaScript
 function validateForm(){
@@ -146,7 +146,7 @@ validation is not run from this, but derives existing validity from
 the field objects
 
 
-## Make Field
+#### Make Field
 
 ```JavaScript
 function makeField(el, config, form){
@@ -167,7 +167,7 @@ elements instead of a single one, so that they can be grouped
 together (which is what radio buttons are for).
 
 
-## Register (form)
+#### Register (form)
 
 ```JavaScript
 function register(jsid, config){
