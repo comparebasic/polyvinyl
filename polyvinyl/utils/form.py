@@ -145,6 +145,9 @@ def render_item(ident, optional=False, content=""):
         field = FORM_BUTTON_FORMAT.format(**vals)
     elif ident.tag == "fieldset":
         if ident.name:
+            if ident.name == "_":
+                vals["label"] = ""
+
             field = FORM_LABELED_FIELDSET.format(**vals)
         else:
             field = FORM_FIELDSET.format(**vals)

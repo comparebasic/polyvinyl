@@ -25,12 +25,13 @@ input {
 
 input[type=radio],
 input[type=checkbox] {
-    margin-left: 0;
+    margin: 6px 6px 0 0;
     display: inline;
     width: auto;
 }
 
 input[type=text] {
+    margin: 6px 0;
     border-radius: 8px;
     padding: 8px 8px;
     box-sizing: border-box;
@@ -39,6 +40,7 @@ input[type=text] {
 
 input[type=password],
 input.visible-password {
+    margin: 6px 0;
     border-radius: 8px;
     padding: 8px 8px 8px 28px;
     box-sizing: border-box;
@@ -85,7 +87,7 @@ fieldset.labeled-fieldset {
     margin: 12px 0;
     padding: 18px 12px 12px 12px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
 }
 
 fieldset.labeled-fieldset .label {
