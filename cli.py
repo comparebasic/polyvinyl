@@ -1,4 +1,4 @@
-import argparse, json, os
+import argparse, json, os, time
 from polyvinyl import lin, SEEK_END
 from polyvinyl.utils import identifier, config, colors
 
@@ -32,6 +32,9 @@ def show(args, records):
 
     for rec in records:
         for k,v in rec.items():
+            if k.find("date") != -1:
+                v = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(int.from_bytes(v, "big"))/1000000.0))
+                
             if args.log_color:
                 print("\x1b[{};{}m{}\x1b[0m: {}".format(colors.BOLD, colors.YELLOW,k,v))
             else:
