@@ -2,9 +2,10 @@
     "idents":[
         "input=Email@email",
         ["radio=Newsletter only@newsletter/news-or-account", "fieldset", [
-            "checkbox=Podcast (Mondays on Tuesday)@mot-podcast",
-            "checkbox=Products and features from Compare Basic@cb-products",
-            "checkbox=Fundraising updates for Compare Basic@cb-products",
+            "checkbox:checked=Compare Basic newsletter@news-general",
+            "checkbox=Podcast (Mondays on Tuesday)@news-mot-podcast",
+            "checkbox=Products and features from Compare Basic@news-cb-products",
+            "checkbox=Fundraising updates for Compare Basic@news-cb-fundraising",
             "para=Select the emails you would like to receive"]
         ],
         ["radio=Login or Create Account@account/news-or-account", "fieldset=_", [
@@ -13,9 +14,10 @@
                 ["para=An account gives you early access to our Labs free-tier, and information about how the project is run. Extra sections are available if you are a donor, investor, or contributor to Compare Basic."],
                 ["checkbox=Register new user@register", "input=Fullname@fullname", 
                     "checkbox=Sign up for our Newsletters@newsletter-signup", "fieldset", [
-                        "checkbox=Podcast (Mondays on Tuesday)@mot-podcast",
-                        "checkbox=Products and features from us@cb-products",
-                        "checkbox=Fundraising updates from us@cb-funding",
+                        "checkbox:checked=Compare Basic newsletter@news-general",
+                        "checkbox=Podcast (Mondays on Tuesday)@news-mot-podcast",
+                        "checkbox=Products and features from us@news-cb-products",
+                        "checkbox=Fundraising updates from us@news-cb-funding",
                         "para=Select the emails you would like to receive"]
                 ]
             ]
@@ -29,8 +31,21 @@
         "password": "depends=password@auth-method",
         "register": false,
         "fullname": "depends=on@register",
-        "news-or-account":true
+        "news-or-account":true,
+        "news-general": false,
+        "news-mot-podcast": false,
+        "news-cb-products": false,
+        "news-cb-funding": false 
     },
+    "persist": {
+        "email": "process=email-token@quote",
+        "date": "date=submission-date@now",
+        "news-general": true,
+        "news-mot-podcast": false,
+        "news-cb-products": false,
+        "news-cb-funding": false 
+    },
+    "persist-name": "newsletter",
     "validation":{
         "password":{
             "rules": [

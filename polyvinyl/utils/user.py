@@ -18,7 +18,7 @@ def create(req, config, data):
         lin.unquote(email_token)))
 
     if os.path.exists(path):
-        req.server.logger.log("User Exists {}".format(path))
+        req.server.logger.error("User Exists {}".format(path))
         raise PolyVinylNotOk("User Exists")
     
     data["salt"] = bcrypt.gensalt()

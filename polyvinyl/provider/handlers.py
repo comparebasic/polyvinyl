@@ -11,10 +11,11 @@ from ..utils.maps import mime_map
 from smtplib import SMTP
 
 
-from ..utils.form import injest
+from ..utils.form import injest, save_form
 
 def newsletter(req, indent, data):
     req.server.logger.debug("Newsletter signup {}".format(data))
+
 
 def auth(req, ident, data):
     if not hasattr(perms_d, ident.name):

@@ -1,7 +1,7 @@
-import urllib, json, os
+import urllib, json, os, time
 
 from .. import lin
-from ..utils import identifier, config as config_d
+from ..utils import identifier, config as config_d, token as token_d, user
 from ..utils.exception import PolyVinylNotOk
 
 FORM_BUTTON_FORMAT = "<button type=\"submit\" {name} {value}>\n" \
@@ -19,7 +19,7 @@ FORM_INPUT_FORMAT = "<label>" \
     "{control}{content}</label>"
 
 FORM_CB_RADIO_FORMAT = "<label>" \
-    "<input type=\"{type}\" name=\"{name}\"{value}/>" \
+    "<input {input-extra} type=\"{type}\" name=\"{name}\"{value}/>" \
     "<span class=\"label-text\">{label}</span>{content}" \
     "</label>"
 
@@ -28,22 +28,11 @@ FORM_HTML_TAG = "<{tag}>{content}</{tag}>"
 FORM_OPTIONAL = "<div class=\"optional\">{}</div>"
 
 
-def injest(req, ident, data):
-    config = req.server.config
-
-    origin = req.form_data
+def _trans_data(req, ident, data, origin, fields):
 
     kv = {}
     deps = {}
-    source = {}
 
-    fields = {}
-    path, ext = config_d.get_path_ext(config, ident)
-    if ext == "json":
-        with open(path, "r") as f:
-            js = json.loads(f.read())
-            fields.update(js["injest"])
-    
     try:
         for k,v in fields.items():
             if isinstance(v, (str)):
@@ -67,6 +56,9 @@ def injest(req, ident, data):
 
                         data[key] = value
                         data[k] = origin[k]
+                    case "date":
+                        if ident.location == "now":
+                            data[k] = token_d.time_bytes(time.time()) 
 
             elif isinstance(v, (bool)):
                 if v or origin.get(k):
@@ -84,6 +76,52 @@ def injest(req, ident, data):
         req.server.logger.warn(err)
         raise PolyVinylNotOk(err)
         
+
+def save_form(req, ident, data):
+    config = req.server.config
+
+    kv = {}
+    deps = {}
+
+    fields = {}
+    path, ext = config_d.get_path_ext(config, ident)
+    if ext == "json":
+        with open(path, "r") as f:
+            js = json.loads(f.read())
+            fields.update(js["persist"])
+            name = js.get("persist-name")
+            if not name:
+                name = ident.name
+
+    form_data = {}
+    _trans_data(req, ident, form_data, data, fields)
+
+    name = "{}.linr".format(name)
+
+    email_token = data["email-token"]
+    user_dir = user.get_userdir(config, email_token) 
+    path = os.path.join(os.path.join(user_dir, "forms"), name)
+
+    details = []
+    for k,v in form_data.items():
+        details.append(k)
+        details.append(v)
+
+    with open(path, "wb+") as f:
+        lin.send_r(f, details) 
+
+
+def injest(req, ident, data):
+    config = req.server.config
+    fields = {}
+    path, ext = config_d.get_path_ext(config, ident)
+    if ext == "json":
+        with open(path, "r") as f:
+            js = json.loads(f.read())
+            fields.update(js["injest"])
+    
+    _trans_data(req, ident, data, req.form_data, fields)
+
 
 def parseFormData(s):
     data = {}
@@ -137,7 +175,8 @@ def render_item(ident, optional=False, content=""):
         "value": " value=\"{}\"".format(value) if value else "",
         "control": "<span class=\"marker eye\">&#128065;</span>" \
             if ident.tag == "password" else "",
-        "content": content
+        "content": content,
+        "input-extra":""
     }
 
     field = ""
@@ -153,7 +192,15 @@ def render_item(ident, optional=False, content=""):
             field = FORM_FIELDSET.format(**vals)
     elif ident.tag == "input" or ident.tag == "password":
         field = FORM_INPUT_FORMAT.format(**vals)
-    elif ident.tag == "checkbox" or ident.tag == "radio":
+    elif ident.tag == "checkbox":
+        vals["value"] = "on"
+        field = FORM_CB_RADIO_FORMAT.format(**vals)
+    elif ident.tag == "checkbox:checked":
+        vals["value"] = "on"
+        vals["input-extra"] = " checked=\"checked\""
+        vals["type"] = "checkbox"
+        field = FORM_CB_RADIO_FORMAT.format(**vals)
+    elif ident.tag == "radio":
         field = FORM_CB_RADIO_FORMAT.format(**vals)
     elif ident.tag == "para":
         field = FORM_HTML_TAG.format(**{"tag":"p", "content": ident.name})
@@ -185,7 +232,7 @@ def gen_loop(ident, data, chain):
         if isinstance(v, (str)):
             ident = identifier.Ident(v)
             match ident.tag:
-                case "input" | "checkbox" | "button" | "option" | \
+                case "input" | "checkbox" | "checkbox:checked" | "button" | "option" | \
                         "radio" | "fieldset" | "password" | "para":
                     content += render_item(ident)
         elif isinstance(v, (list)):
