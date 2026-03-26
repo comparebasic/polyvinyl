@@ -32,6 +32,15 @@ def _trans_data(req, ident, data, origin, fields):
                 match ident.tag:
                     case "depends":
                         deps[(ident.location,ident.name)] = (k, origin[k])
+                    case "value":
+                        if ident.location == "missing":
+                            value = origin.get(k)
+                            if not value:
+                                value = ident.name
+                        else:
+                            value = ident.name
+
+                        data[k] = value
                     case "process":
                         match ident.location:
                             case "quote":
@@ -69,7 +78,7 @@ def _trans_data(req, ident, data, origin, fields):
         raise PolyVinylNotOk(err)
         
 
-def save_form(req, ident, data):
+def save_form(req, ident, data, amend=False):
     config = req.server.config
 
     kv = {}
@@ -86,7 +95,7 @@ def save_form(req, ident, data):
                 name = ident.name
 
     form_data = {}
-    _trans_data(req, ident, form_data, data, fields)
+    _trans_data(req, ident, form_data, req.form_data, fields)
 
     name = "{}.linr".format(name)
 
@@ -103,6 +112,7 @@ def save_form(req, ident, data):
         lin.send_r(f, details) 
 
 
+
 def injest(req, ident, data):
     config = req.server.config
     fields = {}
@@ -113,6 +123,25 @@ def injest(req, ident, data):
             fields.update(js["injest"])
     
     _trans_data(req, ident, data, req.form_data, fields)
+
+
+def query_set_form(req, ident, data):
+    config = req.server.config
+    fields = {}
+    path, ext = config_d.get_path_ext(config, ident)
+    if ext == "json":
+        with open(path, "r") as f:
+            js = json.loads(f.read())
+            fields.update(js["injest"])
+
+    orig = fields
+    fields = {}
+    for k,v in orig.items():
+        if req.query_data.get(k):
+            fields[k] = v
+    
+    _trans_data(req, ident, req.form_data, req.query_data, fields)
+    req.server.logger.debug("Data after injest_query_set {}".format(req.form_data))
 
 
 def parseFormData(s):
@@ -194,7 +223,6 @@ def render_item(req, ident, optional=False, content=""):
             vals["value"] = "on"
             templ_ident = multi_templ_ident
         case "radio":
-            vals["value"] = "on"
             templ_ident = multi_templ_ident
         case "checkbox:checked":
             vals["value"] = "on"

@@ -4,6 +4,9 @@ def make_nav(req, ident, data, path):
     nav_kv = {}
     for _, nav in req.server.nav.lookup.items():
 
+        if not nav.perms:
+            continue
+
         try:
             for inst in nav.perms:
                 # knockout if permission fails

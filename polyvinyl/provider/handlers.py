@@ -11,7 +11,10 @@ from ..utils.maps import mime_map
 from smtplib import SMTP
 
 
-from ..utils.form import injest, save_form
+from ..utils.form import injest, query_set_form, save_form
+
+def save_amend(req, ident, data):
+    return save_form(req, ident, data, amend=True)
 
 def newsletter(req, indent, data):
     req.server.logger.debug("Newsletter signup {}".format(data))
@@ -133,6 +136,22 @@ def form(req, ident, data):
             form_d.gen_html(req, ident, data, config_data)
 
 
+
+def query_eq(req, ident, data):
+    if not req.query_data.get(ident.location):
+        raise PolyVinylKnockout()
+
+    if ident.name and req.query_data[ident.location] != ident.name:
+        raise PolyVinylKnockout()
+
+def query_neq(req, ident, data):
+    try:
+        query_eq(req, ident, data)
+    except PolyVinylKnockout:
+        return
+
+    raise PolyVinylKnockout()
+
 def data_eq(req, ident, data):
     "Ensure a `data` key and value is present\n"
     "<name> is the value\n"
@@ -151,6 +170,24 @@ def data_neq(req, ident, data):
     "<location> is the key\n"
     try:
         data_eq(req, ident, data)
+    except PolyVinylKnockout:
+        return
+
+    raise PolyVinylKnockout()
+
+
+def form_eq(req, ident, data):
+    req.server.logger.log("data_eq {} vs {}".format(data.get(ident.location), ident.name))
+    if not req.form_data.get(ident.location):
+        raise PolyVinylKnockout()
+
+    if ident.name and req.form_data[ident.location] != ident.name:
+        raise PolyVinylKnockout()
+
+
+def form_neq(req, ident, data):
+    try:
+        form_eq(req, ident, data)
     except PolyVinylKnockout:
         return
 
@@ -254,10 +291,10 @@ def pw_set(req, ident, data):
     "Call the Auth service to set a users password\n"
     config = req.server.config
     if config.get("auth-socket"): 
-        if data.get("password"):
+        if req.form_data.get("password"):
             data["password-hash"] = bcrypt.hashpw(
-                data["password"].encode("utf-8"), data["salt"])
-            del data["password"]
+                req.form_data["password"].encode("utf-8"), data["salt"])
+            del req.form_data["password"]
 
         email_token = lin.quote(data["email"]).decode("utf-8")
         cli.query_path(config["auth-socket"], req.server.key, (
