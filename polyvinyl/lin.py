@@ -4,7 +4,6 @@ from .utils import identifier
 from .utils.exception import PolyVinylError, PolyVinylNotOk
 from .utils import config as config_d
 
-
 def quote(s):
     b = bytearray()
     for c in bytes(s, "utf-8"):
@@ -60,8 +59,13 @@ def send(stream, arr):
         stream.write(s)
 
 
-def send_r(stream, arr):
+def send_rec(stream, arr):
     s = bytearray() 
+    if hasattr(stream, 'send'):
+        stream.send(b"\00\00")
+    else:
+        stream.write(b"\00\00")
+
     for seg in arr:
         if isinstance(seg, str):
             seg = bytes(seg, "utf-8")
@@ -140,7 +144,7 @@ def latest_r(stream, key):
         value = item
 
 
-def map_r(stream, keys=None):
+def next_rec(stream, keys=None):
     key = None
     value = None
     data = {}
@@ -160,7 +164,7 @@ def map_r(stream, keys=None):
 
 
 def map_str_r(stream, keys=None):
-    raw = map_r(stream, keys)
+    raw = next_rec(stream, keys)
     return config_d.map_keys(keys, raw, {})
     
 

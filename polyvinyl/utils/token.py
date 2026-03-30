@@ -1,5 +1,10 @@
 import random, time, hashlib, os
 
+TOKEN_SIZE = 64
+TOKEN_MAX = 19
+
+def now_hex():
+    return time_bytes(time.time()).hex()
 
 def time_bytes(t):
     return int(t*1000000).to_bytes(8)
@@ -11,35 +16,34 @@ def time_from_bytes(v):
         time.localtime(float(int.from_bytes(v, "big"))/1000000.0))
 
 
-def get_token(content):
-    h = hashlib.sha256()
+def make_token(content:bytes, nonce_one: bytes, nonce_two: bytes):
+    h = hashlib.sha512()
+    h.update(content)
+    h.update(nonce_one)
+    h.update(nonce_two)
+    return h.digest()
 
+
+def get_token(content):
     if not isinstance(content, (bytes)):
         content = content.encode("utf-8")
 
-    h.update(content)
-    h.update(time_bytes(time.time()))
-    h.update(random.randbytes(4))
-    return h.hexdigest() 
+    return make_token(content, time_bytes(time.time()), random.randbytes(16))
+
+def nth(six: str):
+    return int(six[4:6])
 
 
-def get_six(tk):
-    if not isinstance(tk, (bytes)):
-        tk = tk.encode("utf-8")
+def get_nth(raw_token, n: int):
+    tlength = 3 
+    if n*tlength > len(raw_token)-tlength:
+        raise ValueError("position is greater than max", n)
 
-    offset = tk[0] % 7
-    return int.from_bytes(tk[offset:offset+8], "big") % 999999
+    return "{:04d}{:02d}".format(int.from_bytes(raw_token[n:n+tlength], "big") % 9999, n)
 
 
-def check_six(six, tk):
-    if not isinstance(tk, (bytes)):
-        tk = tk.encode("utf-8")
-
-    if not isinstance(six, (int)):
-        six = int(six)
-
-    offset = tk[0] % 7
-    return six == int.from_bytes(tk[offset:offset+8], "big") % 999999
+def check_six(raw_token, six: str):
+    return get_nth(raw_token, nth(six)) == six
 
 
 def get_short_token(content):

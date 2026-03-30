@@ -41,6 +41,7 @@ def map_keys(keys, items, data):
             data[k] = value 
     return data
 
+
 def get_name_ext(s):
     if not s:
         return s, None, None
@@ -50,12 +51,12 @@ def get_name_ext(s):
     for i in range(length-1, 0, -1):
         c = s[i]
         if c == '.' or c == b'.':
-            idx = i+1
+            idx = i
 
     if idx == -1:
         return s, None, None
 
-    return s, s[:idx], s[idx:]
+    return s, s[:idx], s[idx+1:]
 
 
 def get_path_ext(config, ident):

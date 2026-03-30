@@ -57,7 +57,7 @@ if __name__ == "__main__":
             with open(in_file, "rb") as f:
                 f.seek(0, SEEK_END)
                 while True:
-                    rec = lin.map_r(f, None)
+                    rec = lin.next_rec(f, None)
                     if not rec:
                         break
 
