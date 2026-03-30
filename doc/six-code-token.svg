@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" height="340" width="500" x="0px" y="0px" viewBox="0 0 500 350">
+     <style>
+        .text {
+            font-family: monospace;
+            font-size: 15px;
+        }
+        .note {
+            font-family: sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .label {
+            font-family: sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .bg {
+            fill: #fff;
+        }
+        .line {
+            stroke: #000;
+            fill: none;
+        }
+        .fill {
+            fill: #000;
+        }
+     </style>
+
+     <path x="0" y="0" d="M 0 0 L 500 0 L 500 340 L 0 340 L 0 0" class="bg" />
+
+     <text x="20" y="20" class="note">// Sha512 of a few text bodies (64 bytes)</text>
+     <text x="20" y="40" class="text">&quot;3cd15c23770c03e7efcf0eb1f...&quot;</text>
+     
+     <text x="20" y="80" class="note">// Integers from a 3 byte at a time of the sha512 digest</text>
+     <text x="20" y="100" class="text">[2324236, 255983, 13569713, ...]</text>
+
+     <text x="20" y="140" class="note">// Modulus 9999 of each integer to make it 4 digits</text>
+     <text x="20" y="160" class="text">[4468, 6008, 1070, ...]</text>
+
+     <text x="200" y="200" class="note">// First Code</text>
+     <text x="200" y="220" class="text">446801</text>
+
+     <path d="M 236 224 L 236 230 L 256 230 L 256 224" class="line" />
+     <path d="M 200 224 L 200 230 L 236 230 L 236 224" class="line" />
+     <path d="M 244 230 L 250 240" class="line" />
+     <text x="250" y="260" class="text">nth code</text>
+
+     <path d="M 224 230 L 200 240" class="line" />
+     <text x="40" y="260" class="text">digits from token</text>
+
+     <text x="20" y="300" class="label">64 Byte Token with 18 potential six-codes</text>
+
+</svg>

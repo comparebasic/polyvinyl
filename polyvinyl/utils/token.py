@@ -39,7 +39,12 @@ def get_nth(raw_token, n: int):
     if n*tlength > len(raw_token)-tlength:
         raise ValueError("position is greater than max", n)
 
-    return "{:04d}{:02d}".format(int.from_bytes(raw_token[n:n+tlength], "big") % 9999, n)
+    pos = n*tlength
+    b3 = raw_token[pos:pos+tlength]
+    four = int.from_bytes(b3, "big") % 9999
+
+    print("Pos {} B3 {} Four {} N {}".format(pos, int.from_bytes(b3, "big"), four, n))
+    return "{:04d}{:02d}".format(four, n)
 
 
 def check_six(raw_token, six: str):
