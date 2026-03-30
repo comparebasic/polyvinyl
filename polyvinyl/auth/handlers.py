@@ -2,7 +2,7 @@ import os, bcrypt, time
 from datetime import datetime
 from .. import lin
 from ..utils.exception import PolyVinylNotOk
-from ..utils import token
+from ..utils import token, lin_token
 from .. import SEEK_END, SEEK_CUR, SEEK_START
 
 
@@ -59,7 +59,7 @@ def pw_set(req, ident, data):
     with open(path, "wb") as f:
         f.seek(0, SEEK_END)
         details = ["password-hash", data["password-hash"]]
-        lin.send_r(f, details)
+        lin.send_rec(f, details)
 
 
 def register(req, ident, data):
@@ -79,26 +79,23 @@ def register(req, ident, data):
         details = ["email-token", ident.name, 
             "register-time", token.time_bytes(time.time())]
 
-        lin.send_r(f, details)
+        lin.send_rec(f, details)
 
 
-def token_create(req, ident, data):
+def get_signin_code(req, ident, data):
     config = req.server.config
     email_token = ident.name
     req.server.logger.log("Setting Token {}".format(
         lin.unquote(ident.name)))
 
+    email_token = ident.name
     dir_path = get_authdir(config, email_token)
     if not os.path.exists(dir_path):
-        raise PolyVinylNotOk("User dir not found")
+        raise PolyVinylNotOk("User dir not found", dir_path)
 
-    tk = token.get_short_token(email_token.encode("utf-8"))
-    path = get_tokenfile(config, email_token, tk)
-
-    with open(path, "w+") as f:
-        f.write(token.rfc822(datetime.now()))
-
-    return tk
+    path = get_tokenfile(config, ident.name, "signin.linr")
+    n, code = lin_token.next_or_make(path, email_token)
+    return code
 
 
 def token_consume_code(req, ident, data):
@@ -111,26 +108,26 @@ def token_consume_code(req, ident, data):
     if not os.path.exists(dir_path):
         raise PolyVinylNotOk("User dir not found", dir_path)
 
-    path = os.path.join(dir_path, "tokens")
-    tk = None
-    for itk in os.listdir(path):
-        print("Checking {} vs {} -> {}".format(data["six-code"], itk, token.get_six(itk)))
-        print(token.check_six(data["six-code"], itk))
-
-        if token.check_six(data["six-code"], itk):
-            tk = itk
-            break
-
-    if not tk:
-        raise PolyVinylNotOk("Invalid code", tk)
-
-    path = get_tokenfile(config, ident.name, tk)
-    if not os.path.exists(path):
-        raise PolyVinylNotOk("Invalid path from code", path)
-
-    os.remove(path)
+    path = get_tokenfile(config, ident.name, "signin.linr")
+    if not lin_token.check(path, data["six-code"], consume=True):
+        raise PolyVinylNotOk("Invalid", path)
 
     req.server.logger.log("Token Consumed {}".format(path))
+
+
+def subscription_code(req, ident, data):
+    config = req.server.config
+    req.server.logger.log("Getting Email Subscription {}".format(
+        lin.unquote(ident.name)))
+
+    email_token = ident.name
+    dir_path = get_authdir(config, email_token)
+    if not os.path.exists(dir_path):
+        raise PolyVinylNotOk("User dir not found", dir_path)
+
+    path = get_tokenfile(config, ident.name, "subscriptions.linr")
+    n, code = lin_token.next_or_make(path, email_token)
+    return code
 
 
 def token_consume(req, ident, data):

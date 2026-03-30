@@ -1,6 +1,9 @@
 import os, urllib, random, bcrypt
 from .. import lin, SALT_BYTES, SEEK_END, SEEK_CUR, SEEK_START
 from ..utils.exception import PolyVinylNotOk, PolyVinylKnockout
+from ..utils import form
+from ..auth import cli
+
 
 def get_userdir(config, email_token):
     return os.path.join(config["dirs"]["user-data"], email_token)
@@ -50,7 +53,7 @@ def create(req, config, data):
     dir_path = get_userdir(config, email_token.decode("utf-8")) 
     os.mkdir(dir_path)
     with open(path, "wb+") as f:
-        lin.send_r(f, details) 
+        lin.send_rec(f, details) 
 
     for v in ["forms", "idents"]:
         os.mkdir(os.path.join(dir_path, v))
@@ -65,3 +68,18 @@ def pw_hash(req, email_token, password):
         password = password.encode("utf-8")
     if role:
         return bcrypt.hashpw(password, role["salt"])
+
+
+def get_subscription_url(req, email_token):
+    config = req.server.config
+
+    six = cli.query_path(config["auth-socket"], req.server.key, (
+        "ident",     
+            "subscription_code={}@email".format(email_token),
+    ))
+
+    return "{}/{}?{}".format(
+        config["url"], "auth/subscriptions", form.to_query(config, {
+        "email": email_token,
+        "code":six
+    }));

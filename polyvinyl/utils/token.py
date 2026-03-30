@@ -30,6 +30,12 @@ def get_token(content):
 
     return make_token(content, time_bytes(time.time()), random.randbytes(16))
 
+def get_text_token(content):
+    if not isinstance(content, (bytes)):
+        content = content.encode("utf-8")
+
+    return make_token(content, time_bytes(time.time()), random.randbytes(16))[32:].hex()
+
 def nth(six: str):
     return int(six[4:6])
 
@@ -48,6 +54,9 @@ def get_nth(raw_token, n: int):
 
 
 def check_six(raw_token, six: str):
+    if isinstance(six, (bytes)):
+        six = six.decode("ascii")
+    print("{} vs {}".format(get_nth(raw_token, nth(six)), six))
     return get_nth(raw_token, nth(six)) == six
 
 

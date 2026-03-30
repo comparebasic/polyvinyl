@@ -336,6 +336,11 @@ def email(req, ident, data):
     if not data.get('email-token'):
         data["email-token"] = lin.quote(data["email"]).encode("utf-8")
 
+    data["subscription-url"] = user.get_subscription_url(req, data["email-token"])
+    data["url"] = config["url"] 
+
+    req.server.logger.debug("Data for email {} {}".format(ident, data))
+
     msg = templ.email_msg_from_ident(req, 
         ident,
         data,
@@ -365,10 +370,10 @@ def get_token(req, ident, data):
 
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
-        tk = cli.query_path(config["auth-socket"], req.server.key, (
+        six_code = cli.query_path(config["auth-socket"], req.server.key, (
             "ident", 
-                "token_create={}@email".format(email_token),
+                "get_signin_code={}@email".format(email_token),
         ))
-        data["six-code"] = "{:06d}".format(token.get_six(tk))
+        data["six-code"] = six_code.decode("utf-8")
     else:
         raise PolyVinylNotOk("No Auth Service Defined")

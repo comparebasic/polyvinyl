@@ -22,11 +22,11 @@
             ["get", "form=login.json@page", "end"],
             ["post", "map=email,fullname?@form",
                 ["form_eq=newsletter@news-or-account", [
-                    "register", "save_form=login.json@page", "redir=/auth/newsletter", "end"]
+                    "register", "save_form=login.json@page", "email=newsletter@emails", "redir=/auth/subscriptions", "end"]
                 ],
                 ["form_eq=account@news-or-account", [
                     ["form_eq=password@auth-method", [
-                            ["form_eq=on@register", "register", "save_form=login.json@page", "pw_set", "session_start",
+                            ["form_eq=on@register", "register", "email=registration@emails", "save_form=login.json@page", "pw_set", "session_start",
                                 "redir=/auth/dashboard", "end"],
                             ["form_neq=on@register", "pw_auth", "session_start", "redir=/auth/dashboard", "end"]
                         ]

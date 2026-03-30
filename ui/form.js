@@ -290,6 +290,8 @@ bottom of this file.
             selectEvents.push("focus")
             if({"password":true, "number":true, "text":true, "textarea": true}[type]){
                 events.push("keyup")
+                events.push("change")
+                events.push("paste")
                 validate = validateValue
             }else if({"radio":true, "checkbox":true}[type]){
                 events.push("change")

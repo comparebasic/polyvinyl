@@ -6,7 +6,7 @@ CONFIG_DIR = "example/"
 users = {
     "testone": {
         "name": "testone",
-        "email":"test1@cb.local",
+        "email":"testone@cb.local",
         "fullname": "Test One",
         "password": "TestyPantsyOne9_"
     }

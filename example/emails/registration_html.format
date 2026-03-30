@@ -1,0 +1,12 @@
+<div>
+<p>Hi {fullname},</p>
+
+<p>Thank you for registering an account with <a href="{url}">Compare Basic</a>.</p>
+
+<p>
+Compare Basic,
+<a href="{url}">{url}</a>
+</p>
+</div>
+
+<div style="font-size: 12px"><a href="{subscription-url}">manage subscriptions</a></div>

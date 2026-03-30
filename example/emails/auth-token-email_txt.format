@@ -4,3 +4,5 @@ Use this code to login to {brand}:
 {six-code}
 
 Or, use this link: {login-url}.
+
+Go to this address {subscription-url}" to manage your subscriptions.

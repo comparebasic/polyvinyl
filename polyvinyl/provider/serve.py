@@ -97,7 +97,6 @@ class PolyVinylHandler(BaseHTTPRequestHandler):
                 self.role["ident"] = identifier.Ident("id=@anon")
 
             self.nav = perms.make_nav(self, self.role, self.data, path)
-            self.server.logger.debug(self.nav)
 
             self.resolve(path, self.data)
         except PolyVinylNoAuth as no_auth:

@@ -199,6 +199,8 @@ input[type=radio]:not(:checked) + span + .optional {
 }
 
 label input.six-code {
+    z-index: 2;
+    position: relative;
     font-size: 32px; 
     font-family: monospace;
     letter-spacing: 4px;
@@ -219,6 +221,7 @@ label input.six-code {
 }
 
 .six-grid {
+    z-index: 1;
     position: absolute;
     top: 0;
     left: 0;

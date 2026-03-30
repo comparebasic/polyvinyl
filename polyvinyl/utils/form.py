@@ -136,12 +136,12 @@ def save_form(req, ident, data, amend=False):
         if amend:
            with open(path, "ab") as f:
                 f.seek(0, SEEK_END)
-                lin.send_r(f, details) 
+                lin.send_rec(f, details) 
            req.data["update"] = "Updating {}".format(details) 
 
         else:
             with open(path, "wb+") as f:
-                lin.send_r(f, details) 
+                lin.send_rec(f, details) 
     except FileNotFoundError as err:
         raise PolyVinylNotOk("User or file not found", err)
 
@@ -212,7 +212,7 @@ def load(req, ident, data):
     try:
         with open(path, "rb") as f:
             f.seek(0, SEEK_END)
-            rec = lin.map_r(f, None)
+            rec = lin.next_rec(f, None)
             req.server.logger.debug("Rec {}".format(rec))
 
             _trans_data(req, data, rec, fields, unpack=True) 
@@ -232,7 +232,7 @@ def parseFormData(s):
     return data
 
 
-def toQuery(config, data):
+def to_query(config, data):
     query = ""
     for k, v in data.items():
 

@@ -14,7 +14,7 @@
     <label>
         <span>&nbsp;</span>
         <span>
-            <button type="submit">Login</button>
+            <button type="submit" name="login">Login</button>
         </span>
     </label>
     </fieldset>

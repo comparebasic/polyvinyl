@@ -6,7 +6,7 @@ from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain
 from .. import SESSION_DAYS, SEEK_END, SEEK_CUR, SEEK_START
 from ..utils import user 
-from ..utils.token import get_token, rfc822, time_bytes
+from ..utils.token import get_text_token, rfc822, time_bytes
 
 
 def redir(req, location):
@@ -17,7 +17,7 @@ def redir(req, location):
     elif req.query_data:
         location = "{}?{}".format(
             location,
-            form_d.toQuery(req.server.config, req.query_data))
+            form_d.to_query(req.server.config, req.query_data))
         
     if not location.startswith("http"):
         location = "{}{}".format(config["url"], location)
@@ -97,7 +97,7 @@ def start(req, data):
         else:
             raise PolyVinylNotOk("User email-token not found")
 
-    token = get_token(email_token)
+    token = get_text_token(email_token)
     path = os.path.join(config["dirs"]["sessions"],token)
 
     data["start-time"] = time_bytes(time.time())
@@ -109,4 +109,4 @@ def start(req, data):
         details = ["email-token", email_token, 
             "session-token", data["session-token"],
             "start-time", data["start-time"]]
-        lin.send_r(f, details) 
+        lin.send_rec(f, details) 
