@@ -4,7 +4,11 @@ TOKEN_SIZE = 64
 TOKEN_MAX = 19
 
 def now_hex():
-    return time_bytes(time.time()).hex()
+    return now().hex()
+
+def now():
+    return time_bytes(time.time())
+
 
 def time_bytes(t):
     return int(t*1000000).to_bytes(8)

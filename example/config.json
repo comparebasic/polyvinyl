@@ -41,9 +41,9 @@
             ]
         ],
         "/auth/subscriptions": [ "title=Newsletter Subscriptions@Subscriptions",
-            ["get", "map=email,code@query", "subscription_role", ["query_eq=all@unsub", "unsubscribe"], 
+            ["get", "map=email,code@query", "role=subscriptions", ["query_eq=all@unsub", "unsubscribe"], 
                         "load=subscriptions.json@page", "idents=subscriptions.idents@page", "end"],
-            ["post", "subscription_role", "save_amend=subscriptions.json@page", "idents=subscriptions.idents@page", "end"],
+            ["post", "role=subscriptions", "save_amend=subscriptions.json@page", "idents=subscriptions.idents@page", "end"],
             ["idents=subscriptions.idents@page", "end"]
         ],
         "/auth/logout": [ "title=Logout@Logout",

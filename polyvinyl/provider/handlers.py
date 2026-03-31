@@ -39,6 +39,7 @@ def try_auth(req, ident, data):
 def title(req, ident, data):
     data["title"] = ident.name
 
+
 def api(req, ident, data):
     "Returns data about the handlers and the configuration"
     config = req.server.config
@@ -247,25 +248,29 @@ def token_consume_code(req, ident, data):
         raise PolyVinylNotOk("No Auth Service Defined")
 
 
-def subscription_role(req, ident, data):
+def role(req, ident, data):
     "Call the Auth service to validate and consume a login six-code\n"
     config = req.server.config
+    if req.role.get(ident.name):
+        return
+
     if config.get("auth-socket"): 
         email_token = lin.quote(data["email"]).decode("utf-8")
 
         cli.query_path(config["auth-socket"], req.server.key, (
             "ident",     
-                "subscription_code_check={}@email".format(email_token),
+                "role_check={}@{}".format(ident.name, email_token),
             "six-code",
                 data["code"]
             ))
 
         del data["code"]
-        req.role.update({
-            "email-token": email_token,
-            "subscriptions": True,
-        })
-    else:
+
+        up = {}
+        up["email-token"] = email_token
+        up[ident.name] = True
+        req.role.update(up)
+
         raise PolyVinylNotOk("No Auth Service Defined")
 
 
