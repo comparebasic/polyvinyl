@@ -70,7 +70,7 @@ def pw_hash(req, email_token, password):
         return bcrypt.hashpw(password, role["salt"])
 
 
-def get_subscription_url(req, email_token):
+def get_subscription_urls(req, email_token):
     config = req.server.config
 
     six = cli.query_path(config["auth-socket"], req.server.key, (
@@ -78,8 +78,21 @@ def get_subscription_url(req, email_token):
             "subscription_code={}@email".format(email_token),
     ))
 
-    return "{}/{}?{}".format(
+    manage = "{}/{}?{}".format(
         config["url"], "auth/subscriptions", form.to_query(config, {
-        "email": email_token,
+        "email": email_token.encode("utf-8"),
         "code":six
     }));
+
+    unsubscribe = "{}/{}?{}".format(
+        config["url"], "auth/subscriptions", form.to_query(config, {
+        "email": email_token.encode("utf-8"),
+        "code": six,
+        "unsub": "all"
+    }));
+
+    return {
+        "subscription-url": manage,
+        "unsubscribe-url": unsubscribe,
+        "url": config["url"]
+    }

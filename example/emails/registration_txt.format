@@ -6,3 +6,4 @@ Compare Basic,
 {url}
 
 Go to this address {subscription-url} to manager your subscriptions.
+To no longer recieve any emails except user login messages unsubscribe here: {unsubscribe-url}.

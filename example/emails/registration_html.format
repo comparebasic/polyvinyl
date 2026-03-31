@@ -9,4 +9,5 @@ Compare Basic,
 </p>
 </div>
 
-<div style="font-size: 12px"><a href="{subscription-url}">manage subscriptions</a></div>
+<div style="font-size: 12px"><a href="{subscription-url}">manage subscriptions</a><
+<p>To no longer recieve any emails except user login messages click <a href="{unsubscribe-url}">unsubscribe</a>.

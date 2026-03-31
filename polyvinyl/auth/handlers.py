@@ -130,6 +130,22 @@ def subscription_code(req, ident, data):
     return code
 
 
+def subscription_code_check(req, ident, data):
+    config = req.server.config
+    req.server.logger.log("Getting Email Subscription {}".format(
+        lin.unquote(ident.name)))
+
+    email_token = ident.name
+    dir_path = get_authdir(config, email_token)
+    if not os.path.exists(dir_path):
+        raise PolyVinylNotOk("User dir not found", dir_path)
+
+    path = get_tokenfile(config, ident.name, "subscriptions.linr")
+    if not lin_token.check(path, data["six-code"], consume=True):
+        raise PolyVinylNotOk("Invalid", path)
+
+
+
 def token_consume(req, ident, data):
     config = req.server.config
     req.server.logger.log("Consuming Token {}".format(

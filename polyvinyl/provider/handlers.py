@@ -247,6 +247,28 @@ def token_consume_code(req, ident, data):
         raise PolyVinylNotOk("No Auth Service Defined")
 
 
+def subscription_role(req, ident, data):
+    "Call the Auth service to validate and consume a login six-code\n"
+    config = req.server.config
+    if config.get("auth-socket"): 
+        email_token = lin.quote(data["email"]).decode("utf-8")
+
+        cli.query_path(config["auth-socket"], req.server.key, (
+            "ident",     
+                "subscription_code_check={}@email".format(email_token),
+            "six-code",
+                data["code"]
+            ))
+
+        del data["code"]
+        req.role.update({
+            "email-token": email_token,
+            "subscriptions": True,
+        })
+    else:
+        raise PolyVinylNotOk("No Auth Service Defined")
+
+
 def token_consume(req, ident, data):
     "Call the Auth service to validate and consume a login token\n"
     config = req.server.config
@@ -257,7 +279,7 @@ def token_consume(req, ident, data):
             "ident",     
                 "token_consume={}@email".format(email_token),
             "token",
-                data["token"],
+                data["code"],
             ))
 
         del data["token"]
@@ -329,6 +351,10 @@ def register(req, ident, data):
         raise PolyVinylNotOk("No Auth Service Defined")
 
 
+def unsubscribe(req, ident, data):
+    print("unsubscribe")
+
+
 def email(req, ident, data):
     "Send an email\n"
     config = req.server.config
@@ -336,8 +362,7 @@ def email(req, ident, data):
     if not data.get('email-token'):
         data["email-token"] = lin.quote(data["email"]).encode("utf-8")
 
-    data["subscription-url"] = user.get_subscription_url(req, data["email-token"])
-    data["url"] = config["url"] 
+    data.update(user.get_subscription_urls(req, data["email-token"]))
 
     req.server.logger.debug("Data for email {} {}".format(ident, data))
 

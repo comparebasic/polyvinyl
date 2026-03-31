@@ -10,4 +10,10 @@ body {
     height: 100vh;
     width: 100vw;
     box-sizing: border-box;
+    position: relative;
+}
+
+.tool {
+    position: absolute;
+    z-index: 10;
 }

@@ -6,3 +6,4 @@ Use this code to login to {brand}:
 Or, use this link: {login-url}.
 
 Go to this address {subscription-url}" to manage your subscriptions.
+To no longer recieve any emails except user login messages unsubscribe here: {unsubscribe-url}.

@@ -19,7 +19,8 @@ def render_stache(req, ident, data):
         try:
             with open(path, "r") as f:
                 prep = pystache.parse(f.read())
-                cache[ident.ident] = prep
+                if config.get("cache"):
+                    cache[ident.ident] = prep
         except FileNotFoundError as err:
             raise PolyVinylError(err.args[0], err)
     
@@ -57,7 +58,8 @@ def templ_from(req, ident, data):
             if not prep:
                 with open(path, "r") as f:
                     prep = f.read()
-                    cache[ident.ident] = prep
+                    if config.get("cache"):
+                        cache[ident.ident] = prep
 
             content = prep
             if ext == "format":

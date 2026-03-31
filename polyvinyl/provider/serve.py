@@ -8,7 +8,7 @@ from ..utils.log import GetLogger
 from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain, \
      PolyVinylNotFound, PolyVinylNoAuth
-from ..utils import templ, identifier, form, session, perms
+from ..utils import templ, identifier, form, session, perms, config as config_d
 
 
 class PolyVinylHandler(BaseHTTPRequestHandler):
@@ -128,7 +128,12 @@ class PolyVinylHandler(BaseHTTPRequestHandler):
             self.code = 200
 
         if self.code != 302 and not self.header_stage.get("Content-Type"):
-            self.header_stage["Content-Type"] = "text/html";
+            path, name, ext = config_d.get_path_ext(self.path)  
+            if ext:
+                self.header_stage["Content-Type"] = maps.mime_maps.get(ext);
+
+            if not self.header_stage.get("Content-Type"):
+                self.header_stage["Content-Type"] = "text/html"
 
         self.send_response(self.code, http_messages[self.code]) 
         for k,v in self.header_stage.items():

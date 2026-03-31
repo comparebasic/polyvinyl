@@ -194,16 +194,21 @@ def load(req, ident, data):
     if not form_config:
         raise PolyVinylError("File for config not found", err)
 
-    if req.role:
+    email_token = None
+    if req.role and req.session:
         email_token = data["email-token"]
-    elif form_config.get("scope"):
+    elif req.role and form_config.get("scope"):
         scope = identifier.Ident(form_config["scope"])
-        if scope.tag == "public" and scope.name == "email-token" and \
-                tag.location == "data":
-            email_token = data["email-token"]
+        if scope.location == "role":
+            req.server.logger.debug("Form load scope {} role {}".format(
+                scope,
+                req.role
+            ))
+            if req.role.get(scope.tag) and not scope.name or req.role.get(scope.name):
+                email_token = req.role["email-token"]
 
     if not email_token:
-        raise PolyVinylError("User for file  to load not found", err)
+        raise PolyVinylError("User for file to load not found")
 
     name = "{}.linr".format(name)
     user_dir = user.get_userdir(config, email_token) 
@@ -238,9 +243,18 @@ def to_query(config, data):
 
         if query:
             query += "&"
-        query += "{}={}".format(
-            urllib.parse.quote(k, encoding=None, errors=None),
-            urllib.parse.quote(v, encoding=None, errors=None))
+
+        if isinstance(k, (bytes)):
+            k = k.decode("utf-8")
+        else:
+            k = urllib.parse.quote(k, encoding=None, errors=None)
+
+        if isinstance(v, (bytes)):
+            v = v.decode("utf-8")
+        else:
+            v = urllib.parse.quote(k, encoding=None, errors=None)
+
+        query += "{}={}".format(k, v) 
     return query
 
 def parseUrl(s):

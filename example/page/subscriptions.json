@@ -36,5 +36,5 @@
         "news-cb-funding": {"deps": ["clear=on@unsubscribe-all"]}
     },
     "persist-name": "newsletter",
-    "scope":"public=email-token@data"
+    "scope":"subscriptions=email-token@role"
 }

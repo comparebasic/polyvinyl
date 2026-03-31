@@ -41,14 +41,10 @@
             ]
         ],
         "/auth/subscriptions": [ "title=Newsletter Subscriptions@Subscriptions",
-            ["get", 
-                ["query_eq=yes@un", 
-                    ["query_set_form=subscriptions.json@page", "map=email,email-token@form", "save_amend=subscriptions.json@page",
-                        "load=subscriptions.json@page", "idents=subscriptions.idents@page", "end"]],
-                ["query_neq=yes@un", 
-                    ["idents=subscriptions.idents@page", "end"]]
-            ],
-            ["post", "save_amend=subscriptions.json@page", "idents=subscriptions.idents@page", "end"]
+            ["get", "map=email,code@query", "subscription_role", ["query_eq=all@unsub", "unsubscribe"], 
+                        "load=subscriptions.json@page", "idents=subscriptions.idents@page", "end"],
+            ["post", "subscription_role", "save_amend=subscriptions.json@page", "idents=subscriptions.idents@page", "end"],
+            ["idents=subscriptions.idents@page", "end"]
         ],
         "/auth/logout": [ "title=Logout@Logout",
             ["get", "try_auth=session", "session_close", "redir=/auth/", "end"],
@@ -72,13 +68,14 @@
         "/static/style.css": ["content=style.css@static"],
         "/static/form.css": ["content=form.css@ui"],
         "/static/form.js": ["content=form.js@ui"],
-        "/error": ["title=Error", "content=error.html@page"]
+        "/error": ["title=Error", "content=error.html@page"],
+        "/api/handlers.json": ["get", "api=handlers"]
     },
     "setup": {
         "page": ["nav"]
     },
     "perms": {
-        "/auth/subscriptions": ["no_session"],
+        "/auth/subscriptions": [],
         "/auth/login": ["no_session"],
         "/auth/dashboard": ["session"],
         "/auth/logout": ["session"] 
@@ -87,7 +84,7 @@
         "content=@page": ["content=header.stache@inc", true, "content=footer.html@inc"],
         "form=@page": ["content=header.stache@inc", true, "content=footer.html@inc"],
         "idents=@page": ["content=header.stache@inc", true, "content=footer.html@inc"],
-        "content=@ui-page": ["content=header.html@inc", true, "content=footer.html@inc"]
+        "content=@ui-page": ["content=header.stache@inc", true, "content=footer.html@inc"]
     },
     "fields": {
         "session": {
@@ -114,5 +111,6 @@
     "url": "http://localhost:3000",
     "smtp": "localhost",
     "provider-key": "/basic/fixtures/bytes32.b64",
-    "auth-key": "/basic/fixtures/bytes32.b64"
+    "auth-key": "/basic/fixtures/bytes32.b64",
+    "cache": false
 }

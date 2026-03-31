@@ -1,12 +1,24 @@
-import argparse, os, glob
+import argparse, os, glob, re
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         files = glob.glob("%s/*" % self.server.path)
-        latest = max(files, key=os.path.getctime)
-        print(latest)
+        files.sort(key=os.path.getctime, reverse=True)
+
+        match self.path:
+            case "/":
+                latest = files[0]
+            case "/register":
+                regex = re.compile("Subject: Thanks for registering an account with")
+                for file in files:
+                    
+                    with open(file, "r") as f:
+                        if regex.search(f.read()):
+                            latest = file
+                            break
+                        print("Nope {}".format(file))
 
         self.send_response(200, "Ok") 
         self.send_header("Content-Type", "text/plain")
