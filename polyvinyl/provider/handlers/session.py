@@ -1,13 +1,18 @@
 "Session opening/closing and creation"
 from .. import perms as perms_d, user, session, templ, form as form_d, maps,api as api_d
 from ...auth import cli
-from ...utils import token, mapper as map_d, config as config_d, chain, lin
+from ...utils import token, mapper, config as config_d, chain, lin
 from ...utils.exception import PolyVinylNotOk, PolyVinylError, PolyVinylKnockout
 
 
 def session_start(req, ident, data):
     "Start a new session, assuming previous functions have validated the user\n"
-    session.start(req)
+
+    token = mapper.val_from_ident(req, ident, data)
+    if not token:
+        raise PolyVinylNotOk(ident)
+
+    session.start(req, token)
 
     cookie = "Ssid={}; Expires={}; HttpOnly; Secure; SameSite=Lax;".format(
         req.session["session-token"],

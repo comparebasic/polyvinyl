@@ -1,5 +1,18 @@
 from ..utils.exception import PolyVinylError, PolyVinylKnockout
 
+def val_from_ident(req, ident, data):
+    match ident.location:
+        case "data":
+            return data.get(ident.name)
+        case "session":
+            return req.session.get(ident.name)
+        case "form":
+            return req.form_data.get(ident.name)
+        case "query":
+            return req.query_data.get(ident.name)
+
+    return None
+
 
 def arr_to_dict(arr):
     data = {}

@@ -38,20 +38,20 @@ def parse_cookie(cookie):
     return data
 
 
-def close(req, ident):
+def load(req, email_token):
     config = req.server.config
-    if not req.cookie.get("Ssid"):
-        raise PolyVinylNotOk("No Ssid from cookie")
 
-    path = os.path.join(config["dirs"]["sessions"], req.cookie["Ssid"])
-    if not os.path.exists(path):
-        raise PolyVinylNotOk("No Ssid file found")
+    req.role = user.load_user(config, email_token)
+    req.role.update(user.load_roles(config, email_token))
 
-    os.remove(path)
-    req.session = {}
+    req.server.logger.warn("Loaded User/Role {}".format(req.role))
+
+    if not req.role:
+        req.session = {} 
+        raise PolyVinylNotOk("User not found")
 
 
-def load(req):
+def load_from(req, ssid):
     config = req.server.config
     if not req.cookie.get("Ssid"):
         return
@@ -70,21 +70,12 @@ def load(req):
         req.server.logger.debug("Session {}".format(req.session))
         raise PolyVinylNotOk("User email-token not found")
 
-    email_token = req.session["email-token"]
-    req.role = user.load_user(config, email_token)
-    req.role.update(user.load_roles(config, email_token))
-
-    req.server.logger.warn("Loaded User/Role {}".format(req.role))
-
-    if not req.role:
-        req.session = {} 
-        raise PolyVinylNotOk("User not found")
+    load(req, req.session["email-token"])
 
 
-def start(req):
+def start(req, email_token):
     config = req.server.config
 
-    email_token = req.role["email-token"]
     token = get_text_token(email_token)
     path = os.path.join(config["dirs"]["sessions"],token)
 
@@ -97,4 +88,24 @@ def start(req):
     with open(path, "wb+") as f:
         lin.send_rec(f, details) 
 
-    req.session = mapper.arr_to_dict(details)
+    session = mapper.arr_to_dict(details)
+
+    if not session.get("email-token") or session["email-token"] != email_token:
+        req.server.logger.debug("Session {}".format(req.session))
+        raise PolyVinylNotOk("User email-token does not match or not found")
+
+    req.session = session
+    load(req, req.session["email-token"])
+
+
+def close(req, ident):
+    config = req.server.config
+    if not req.cookie.get("Ssid"):
+        raise PolyVinylNotOk("No Ssid from cookie")
+
+    path = os.path.join(config["dirs"]["sessions"], req.cookie["Ssid"])
+    if not os.path.exists(path):
+        raise PolyVinylNotOk("No Ssid file found")
+
+    os.remove(path)
+    req.session = {}

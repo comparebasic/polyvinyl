@@ -26,9 +26,9 @@
                 ],
                 ["form_eq=account@news-or-account", [
                     ["form_eq=password@auth-method", [
-                            ["form_eq=on@register", "register", "add_role=signin", "email=registration@emails", "save_form=login.json@page", "pw_set", "session_start",
+                            ["form_eq=on@register", "register", "add_role=signin", "email=registration@emails", "save_form=login.json@page", "pw_set", "session_start=email-token@data",
                                 "redir=/auth/dashboard", "end"],
-                            ["form_neq=on@register", "pw_auth", "add_role=signin", "session_start", "redir=/auth/dashboard", "end"]
+                            ["form_neq=on@register", "pw_auth", "session_start=email-token@data", "redir=/auth/dashboard", "end"]
                         ]
                     ],
                     ["form_eq=send-email@auth-method", 
@@ -51,8 +51,8 @@
             ["redir=/auth/login", "end"]
         ],
         "/auth/code-login": [ "title=Token Login",
-            ["get", "map=code,email@query", "consume_code=signin", "session_start", "redir=/auth/dashboard", "end"],
-            ["post", "map=email,six-code@form", "consume_code=signin", "session_start", "redir=/auth/dashboard","end"],
+            ["get", "map=code,email@query", "consume_code=signin", "session_start=email-token@data", "redir=/auth/dashboard", "end"],
+            ["post", "map=email,six-code@form", "consume_code=signin", "session_start=email-token@data", "redir=/auth/dashboard","end"],
             ["content=email-sent.stache@page", "end"]
         ],
         "/not-found": ["title=Not Found", "content=not-found.html@page"],
