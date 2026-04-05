@@ -78,24 +78,6 @@ def unsubscribe(req, ident, data):
     print("unsubscribe")
 
 
-def pw_auth(req, ident, data):
-    "Call the Auth service to validate a password\n"
-    config = req.server.config
-    if config.get("auth-socket"): 
-        email_token = lin.quote(data["email"]).decode("utf-8")
-        password_hash = user.pw_hash(req, email_token, req.form_data["password"])
-        del req.form_data["password"]
-
-        cli.query_path(config["auth-socket"], req.server.key, (
-            "ident",     
-                "pw_auth={}@email".format(email_token),
-            "password-hash",
-                password_hash
-        ))
-    else:
-        raise PolyVinylNotOk("No Auth Service Defined")
-
-
 def add_role(req, ident, data):
     "Call the Auth service to validate and consume a login six-code\n"
     config = req.server.config

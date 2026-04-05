@@ -16,9 +16,8 @@ def query_path(path, key, details):
     lin.send(sock, details)
     answer = lin.read_next(sock) 
     reason = lin.read_next(sock)
-    if answer != b"ok":
-        sock.close()
-        raise PolyVinylNotOk("Invalid", reason)
+
+    ok = (answer == b"ok")
 
     sock.close()
-    return reason
+    return ok, reason
