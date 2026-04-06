@@ -1,37 +1,11 @@
 import socketserver, argparse, json, os, select, stat, hashlib
 
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from cryptography.hazmat.primitives.serialization import load_pem_private_key, load_pem_public_key
-
-from . import handlers, cli
+from . import handlers, cli, sign
 from ..utils.log import GetLogger
 from ..utils.exception import PolyVinylNotOk, PolyVinylError
 from ..utils import identifier, lin
 
 keys = {}
-
-def get_role_key(config):
-
-    if not keys.get("role"):
-        key = {"pub": None, "priv": None}
-        priv_path = os.path.join(config["dirs"]["auth-keys"], "role.priv")
-        pub_path = os.path.join(config["dirs"]["auth-keys"], "role.pub")
-        try:
-            with open(pub_path, "rb") as f:
-                key["pub"] = load_pem_public_key(f.read())
-
-            with open(priv_path, "rb") as f:
-                key["priv"] = load_pem_private_key(f.read(), password=None)
-
-        except FileNotFoundError as err:
-            raise err
-
-        keys["role"] = key
-
-    if not keys.get("role"):
-        raise PolyVinylNotOk("Invalid", ident)
-
-    return keys["role"]
 
 
 class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
@@ -84,37 +58,21 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
 
             self.server.logger.log("Auth run {}".format(ident.tag))
             print("Resp {}".format(resp))
-            if resp:
-                h = hashlib.sha256()
-                for x in resp:
-                    print("adding {}".format(x))
-                    if isinstance(x, (str)):
-                        x = x.encode("utf-8")
-
-                    h.update(x)
-
-                digest = h.digest()
-                print("digest {}".format(digest.hex()))
-                resp.append(self.server.keys["role"]["priv"].sign(h.hexdigest().encode("utf-8")))
-                    
-                details = ["ok"] + resp + [""]
-                self.respond(details)
+            if resp is not None:
+                arr_append_sig(resp, self.keys["role"]["priv-ident"])
+                cli.respond(details)
             else:
-                self.respond("ok", "")
+                cli.respond("no", "")
 
             return
 
         except PolyVinylNotOk as err:
             self.server.logger.log("Invalid login", err.args)
-            self.respond("no", err.args[0], "")
+            cli.respond("no", err.args[0], "")
             return
 
         self.server.logger.log("Noop")
-        self.respond("no", "")
-
-
-    def respond(self, *args):
-        lin.send(self.wfile, args)
+        cli.respond("no", "")
 
 
 class PolyVinylAuthServer(socketserver.UnixStreamServer):
@@ -131,7 +89,7 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
 
     def load_keys(self):
         self.keys = { 
-            "role": get_role_key(self.config)
+            "role": sign.get_role_key(self.config, "role", "ed25519-sha256")
         }
         print(self.keys)
 

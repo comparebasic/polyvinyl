@@ -215,15 +215,6 @@ def load_key(path):
         return base64.b64decode(f.read())
 
 
-def get_sig(key, items):
-    h = hmac.new(key, b"", hashlib.sha256)
-    for v in items:
-        if isinstance(v, (str)):
-            v = v.encode("utf-8")
-        h.update(v)
-    return h.digest()
-
-
 def verify(key, items):
     if items[0] == b"aim":
         if items[-2] != b"end-sig":

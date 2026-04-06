@@ -39,3 +39,8 @@ def query_path(path, key, details):
 
     sock.close()
     return ok, answer 
+
+
+def respond(stream, ident, details):
+    details = [b"aim", ident.ident] + details + [""]
+    lin.send(stream, details)
