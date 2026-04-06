@@ -3,7 +3,6 @@ from ...utils import lin, lin_token
 from ...utils.exception import PolyVinylNotOk
 from . import dir as dir_d
 
-
 def get_code(req, ident, data):
     config = req.server.config
     email_token = ident.location

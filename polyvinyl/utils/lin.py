@@ -59,6 +59,23 @@ def send(stream, arr):
         stream.write(s)
 
 
+def recv_rec(stream, arr):
+    key = None
+    value = None
+    data = {}
+    while True:
+        item  = read_next(stream)
+        if item is None:
+            break
+        if value:
+            key = item.decode("utf-8")
+            data[key] = value 
+            value = None
+        else:
+            value = item
+    return data
+
+
 def send_rec(stream, arr):
     s = bytearray() 
     if hasattr(stream, 'send'):
@@ -76,6 +93,7 @@ def send_rec(stream, arr):
         stream.send(s)
     else:
         stream.write(s)
+
 
 def ammend_rec(stream, arr):
     s = bytearray() 

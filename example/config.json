@@ -8,7 +8,8 @@
         "sessions": "example/sessions",
         "emails": "example/emails",
         "ui": "ui/",
-        "ui-page": "ui/"
+        "ui-page": "ui/",
+        "auth-keys": "/basic/examples/keys/"
     },
     "routes": {
         "/": ["redir=/auth/login", "end"],

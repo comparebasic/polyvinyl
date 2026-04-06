@@ -1,9 +1,37 @@
-import socketserver, argparse, json, os, select, stat
+import socketserver, argparse, json, os, select, stat, hashlib
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from . import handlers, cli
 from ..utils.log import GetLogger
 from ..utils.exception import PolyVinylNotOk, PolyVinylError
 from ..utils import identifier, lin
+
+keys = {}
+
+def get_role_key(config):
+    if not keys.get("role"):
+        key = {"pub": None, "priv": None}
+        priv_path = os.path.join(config["dirs"]["auth-keys"], "role.priv")
+        pub_path = os.path.join(config["dirs"]["auth-keys"], "role.pub")
+        try:
+            with open(pub_path, "r") as f:
+                key["pub"] = load_pem_public_key(f.read(), password=None)
+
+            with open(priv_path, "r") as f:
+                key["priv"] = load_pem_private_key(f.read(), password=None)
+
+        except FileNotFoundError:
+            pass
+
+        keys["role"] = key
+
+    if not keys.get(ident.name):
+        raise PolyVinylNotOk("Invalid", ident)
+
+    if keys.get(ident.name):
+        return keys[ident.name]
+
 
 class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
 
@@ -55,7 +83,17 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
 
             self.server.logger.log("Auth run {}".format(ident.tag))
             if resp:
-                self.respond("ok", resp, "")
+                h = hashlib.sha256()
+                for x in resp:
+                    print("adding {}".format(x))
+                    h.update(x)
+
+                digest = h.digest()
+                print("digest {}".format(digest.hex()))
+                resp.append(self.keys["role"]["priv"].sign(h.hexdigest()))
+                    
+                details = ["ok"] + resp + [""]
+                self.respond(details)
             else:
                 self.respond("ok", "")
 
@@ -78,6 +116,7 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
     def __init__(self, config, logger, _bind_and_activate=True):
         self.config = config
         self.logger = logger
+        self.load_keys()
         self.key = None
         if config.get("auth-key"):
             self.key = lin.load_key(config["auth-key"])
@@ -85,4 +124,9 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
         perms = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
         os.chmod(config["auth-socket"], perms)
 
+    def load_keys(self):
+        self.keys = { 
+            "role": get_role_key(self.config)
+        }
+        print(self.keys)
 

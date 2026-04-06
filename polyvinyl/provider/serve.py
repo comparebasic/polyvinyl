@@ -150,9 +150,12 @@ class PolyVinylProviderServer(HTTPServer):
         self.config = config
         self.logger = logger
         self.handlers = handlers
-        self.key = None
+        self.keys = {}
         if config.get("provider-key"):
-            self.key = lin.load_key(config["provider-key"])
+            self.keys["hmac"] = {
+                "priv": lin.load_key(config["provider-key"]),
+                "pub": None
+            }
 
         setup_chain = chain.setup_config(config, "setup", setup_d)
         chain.linear(self, setup_chain)

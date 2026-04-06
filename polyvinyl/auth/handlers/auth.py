@@ -3,6 +3,10 @@ from . import dir as dir_d
 from ... import SEEK_END, SEEK_CUR, SEEK_START
 from ...utils.exception import PolyVinylNotOk
 from ...utils import token, lin, lin_token
+    
+
+def role_pubkey(req, ident, data):
+    data["pub-key"] = req.keys["role"]["pub"]
 
 
 def pw_auth(req, ident, data):

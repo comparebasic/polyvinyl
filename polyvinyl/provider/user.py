@@ -1,7 +1,7 @@
 import os, urllib, random, bcrypt
-from . import form
+from . import form, role as role_d
 from ..utils.exception import PolyVinylNotOk, PolyVinylKnockout
-from ..utils import token as token_d, lin, identifier, role as role_d
+from ..utils import token as token_d, lin, identifier
 from ..auth import cli
 from .. import SALT_BYTES, SEEK_END, SEEK_CUR, SEEK_START
 
@@ -45,19 +45,18 @@ def load_user(config, role, password=None, code=None, consume="no"):
         raise PolyVinylNoAuth("No code defined for user, password {}".format(
             bool(password)))
 
-    try:
-        names = []
-        with open(path, "rb") as f:
-            f.seek(0, SEEK_END)
-            while True:
-                rec = lin.next_rec(f, None)
-                if not rec:
-                    break
+    names = []
+    with open(path, "rb") as f:
+        f.seek(0, SEEK_END)
+        while True:
+            rec = lin.next_rec(f, None)
+            if not rec:
+                break
 
-                names.append(rec["role"])
-        ok, reason =  verify_roles(role, names, code consume):
-        if not ok:
-            raise PolyVinylNoAuth(reason)
+            names.append(rec["role"])
+    ok, reason =  verify_roles(role, names, code, consume)
+    if not ok:
+        raise PolyVinylNoAuth(reason)
 
     if user:
         role["user"] = user

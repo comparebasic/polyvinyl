@@ -4,6 +4,20 @@ from ..utils.exception import PolyVinylNotOk
 
 ENC = "hmac-concat"
 
+class Incomplete:
+    pass
+
+
+def cli_to_bool(ok: bytes):
+    match ok:
+        case b"ok":
+            return True
+        case b"no":
+            return False 
+        case b"in":
+            return Incomplete 
+
+
 def query_path(path, key, details):
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -14,10 +28,8 @@ def query_path(path, key, details):
     sig = lin.get_sig(key, details)
     details = [b"aim", ENC] + list(details) + ["end-sig", sig, ""] 
     lin.send(sock, details)
-    answer = lin.read_next(sock) 
-    reason = lin.read_next(sock)
-
-    ok = (answer == b"ok")
+    oks, answer = lin.read_recv(sock) 
+    ok = cli_to_bool(oks)
 
     sock.close()
-    return ok, reason
+    return ok, answer 

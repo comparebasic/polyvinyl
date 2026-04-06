@@ -1,11 +1,20 @@
 import os, urllib, random, bcrypt
-from . import form
+from . import form, user
 from ..utils.exception import PolyVinylNotOk, PolyVinylKnockout, PolyVinylNoAuth
-from ..utils import token as token_d, lin, identifier, user
+from ..utils import token as token_d, lin, identifier
 from ..auth import cli
 from .. import SALT_BYTES, SEEK_END, SEEK_CUR, SEEK_START
 
 ROLES_NAME = "roles"
+
+def get_role_pubkey(server):
+    details = ["ident", "role_pubkey"]
+    ok, answer = cli.query_path(config["auth-socket"], req.server.key, details)
+
+    if ok and answer.get("pub-key"):
+        return answer["pub-key"]
+    
+    raise PolyVinylNotOk("Cannot find role key")
 
 
 def set_id(role, token):
