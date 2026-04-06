@@ -4,6 +4,7 @@ from ..utils.exception import PolyVinylNotOk
 
 ENC = "hmac-concat"
 
+
 class Incomplete:
     pass
 
@@ -28,8 +29,13 @@ def query_path(path, key, details):
     sig = lin.get_sig(key, details)
     details = [b"aim", ENC] + list(details) + ["end-sig", sig, ""] 
     lin.send(sock, details)
-    oks, answer = lin.read_recv(sock) 
-    ok = cli_to_bool(oks)
+    answer = lin.recv_rec(sock) 
+
+    if len(answer):
+        ok = cli_to_bool(oks)
+        anser = answer[1:]
+    else:
+        ok = False
 
     sock.close()
     return ok, answer 

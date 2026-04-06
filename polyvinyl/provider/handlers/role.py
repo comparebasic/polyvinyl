@@ -65,6 +65,10 @@ def pw_set(req, ident, data):
         raise PolyVinylNotOk("No Auth Service Defined")
 
 
+def pw_auth(req, ident, data):
+    pass
+
+
 def register(req, ident, data):
     "Call the Auth service to register a new user\n"
     config = req.server.config

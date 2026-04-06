@@ -59,7 +59,7 @@ def send(stream, arr):
         stream.write(s)
 
 
-def recv_rec(stream, arr):
+def recv_rec(stream):
     key = None
     value = None
     data = {}

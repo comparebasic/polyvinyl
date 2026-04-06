@@ -2,13 +2,14 @@ import argparse, json, urllib, traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from . import handlers, setup as setup_d
+from . import templ, form, session, perms
 from ..utils.log import GetLogger
 from ..utils.exception import \
      PolyVinylNotOk, PolyVinylError, PolyVinylKnockout, PolyVinylReChain, \
      PolyVinylNotFound, PolyVinylNoAuth
 from ..utils import chain, lin, config as config_d, identifier
-from . import templ, form, session, perms
 from .maps import http_messages
+from ..auth import cli
 
 
 class PolyVinylHandler(BaseHTTPRequestHandler):
@@ -157,8 +158,13 @@ class PolyVinylProviderServer(HTTPServer):
                 "pub": None
             }
 
+        if config.get("auth-socket"):
+            ok, answer = cli.query_path(config["auth-socket"], self.keys["hmac"]["priv"], (
+                "ident", "role_pubkey"
+            ))
+            print(answer)
+
         setup_chain = chain.setup_config(config, "setup", setup_d)
         chain.linear(self, setup_chain)
 
         return super().__init__(address, PolyVinylHandler)
-

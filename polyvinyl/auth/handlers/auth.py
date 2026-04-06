@@ -6,7 +6,7 @@ from ...utils import token, lin, lin_token
     
 
 def role_pubkey(req, ident, data):
-    data["pub-key"] = req.keys["role"]["pub"]
+    return ["pub-key", req.server.keys["role"]["pub"].public_bytes_raw().hex()]
 
 
 def pw_auth(req, ident, data):
