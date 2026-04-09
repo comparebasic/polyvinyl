@@ -9,7 +9,7 @@ from ..utils.exception import \
      PolyVinylNotFound, PolyVinylNoAuth
 from ..utils import chain, lin, config as config_d, identifier
 from .maps import http_messages
-from ..auth import cli
+from ..auth import cli, sign, enc
 
 
 class PolyVinylHandler(BaseHTTPRequestHandler):
@@ -153,16 +153,24 @@ class PolyVinylProviderServer(HTTPServer):
         self.handlers = handlers
         self.keys = {}
         if config.get("provider-key"):
-            self.keys["hmac"] = {
-                "priv": lin.load_key(config["provider-key"]),
-                "pub": None
+            self.keys = {
+                "auth": sign.get_role_key(self.config, "auth", "ed25519-sha256"),
+                "self": sign.get_role_key(self.config, "provider", "ed25519-sha256")
             }
+    
+            self.keys["auth"].update(enc.get_key(config, "auth"))
+            print(self.keys)
 
         if config.get("auth-socket"):
-            ok, answer = cli.query_path(config["auth-socket"], self.keys["hmac"]["priv"], (
-                "ident", "role_pubkey"
-            ))
-            print(answer)
+            details = [
+                "ident", "role_pubkey", "respond", self.keys["self"]["pub-ident"].ident
+            ]
+            answer = cli.query_path(
+                config["auth-socket"],
+                self.keys["self"],  
+                self.keys["auth"],
+                details)
+            print("Answer {}".format(answer))
 
         setup_chain = chain.setup_config(config, "setup", setup_d)
         chain.linear(self, setup_chain)

@@ -1,11 +1,12 @@
 import socketserver, argparse, json, os, select, stat, hashlib
 
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+
 from . import handlers, cli, sign
 from ..utils.log import GetLogger
 from ..utils.exception import PolyVinylNotOk, PolyVinylError
 from ..utils import identifier, lin
-
-keys = {}
 
 
 class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
@@ -28,13 +29,35 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
         if len(items) == 0:
             self.respond("no", "no items recieved", "")
 
-        self.auth(items)
+        if items[0] == b"aim":
+            self.auth(items)
+        else:
+            raise PolyVinylNotOk("Unknown Protocol", items[0])
 
 
     def auth(self, items):
-        if self.server.key:
+        ident = identifier.Ident(items[1])
+        if ident.tag == "concat" and ident.name == "rsa-sha256":
+            key = self.server.keys.get(ident.location)
+            if not key:
+                raise PolyVinylNotOk("Unable find key", ident.location)
+
+            msg = bytearray()
+            for chunk in items[2:]:
+                msg += key["priv"].decrypt(
+                    chunk,
+                    padding.OAEP(
+                        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                        algorithm=hashes.SHA256(),
+                        label=None
+                    )
+                )
+
+            print("Msg {}".format(msg))
+
+        if self.server.keys:
             try:
-                lin.verify(self.server.key, items)
+                lin.verify(self.server.keys, items)
             except Exception as err:
                 self.server.logger.log("Invalid message details", err.args)
                 self.respond("no", "Invalid message details", "")
@@ -81,8 +104,6 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
         self.logger = logger
         self.keys = {}
         self.load_keys()
-        if config.get("auth-key"):
-            self.key = lin.load_key(config["auth-key"])
         super().__init__(config["auth-socket"], PolyVinylAuthHandler, True)
         perms = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
         os.chmod(config["auth-socket"], perms)

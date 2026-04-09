@@ -1,66 +1,59 @@
+import os, hashlib
+
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key, load_pem_public_key
 
+from ..utils import identifier
+from ..utils.exception import PolyVinylNotOk 
 
-def arr_append_sig(ident, items):
-    if ident.location == "hmac-sha256":
-        key = ident.name.from_hex()
+
+def arr_append_sig(ident, key, items):
+    if ident.name == "hmac-sha256":
+        key = bytes.fromhex(ident.location)
         h = hmac.new(key, b"", hashlib.sha256)
         for v in items:
             if isinstance(v, (str)):
                 v = v.encode("utf-8")
             h.update(v)
-        items.append(h.digest())
 
-    elif ident.location == "ed25519-sha256":
-        key = Ed25519PublicKey.from_private_bytes(ident.name.from_hex())
+        return h.digest()
+
+    elif ident.name == "ed25519-sha256":
         h = hashlib.sha256()
         for v in items:
             if isinstance(v, (str)):
                 v = v.encode("utf-8")
+
             h.update(v)
-        items.append(key.sign(h.digest()))
+
+    return key["priv"].sign(h.digest())
 
 
-def get_role_key(config):
-    if not keys.get("role"):
-        key = {"pub": None, "priv": None}
-        priv_path = os.path.join(config["dirs"]["auth-keys"], "role.priv")
-        pub_path = os.path.join(config["dirs"]["auth-keys"], "role.pub")
-        try:
-            with open(pub_path, "rb") as f:
-                ec = load_pem_public_key(f.read())
+def get_role_key(config, name, proto):
+    key = {"pub": None, "priv": None, "name": name}
+    priv_path = os.path.join(config["dirs"]["auth-keys"], "{}.priv".format(name))
+    pub_path = os.path.join(config["dirs"]["auth-keys"], "{}.pub".format(name))
+    try:
+        with open(pub_path, "rb") as f:
 
-                if isinstance(ec, (Ed25519PublicKey)):
-                    concat_type = "ed25519-sha256"
-                else:
-                    raise PolyVinylNotOk("Incompatible key type")
+            concat_type = "ed25519-sha256"
+            ident_s = "pub_key={}@{}".format(concat_type, name)
+            try:
+                key["pub"] = load_pem_public_key(f.read())
+            except ValueError as err:
+                raise PolyVinylError("Unable to load key {}".format(pub_path), err)
+            key["pub-ident"] = identifier.Ident(ident_s)
 
-                pub = ec.private_bytes_raw()
-                ident_s = "concat={}@{}".format(pub.hex(), concat_type)
-                key["pub"] = pub
-                key["pub-ident"] = identifier.Ident(ident_s)
-
-            with open(priv_path, "rb") as f:
-                ec = load_pem_private_key(f.read(), password=None)
-
-                if isinstance(ec, (Ed25519PublicKey)):
-                    concat_type = "ed25519-sha256"
-                else:
-                    raise PolyVinylNotOk("Incompatible key type")
-
-                priv = ec.private_bytes_raw()
-                ident_s = "concat={}@{}".format(priv.hex(), concat_type)
-                key["priv"] = priv
-                key["priv-ident"] = identifier.Ident(ident_s)
+        with open(priv_path, "rb") as f:
+            ident_s = "priv_key={}@{}".format(concat_type, name)
+            try:
+                key["priv"] = load_pem_private_key(f.read(), password=None)
+            except ValueError as err:
+                raise PolyVinylError("Unable to load key {}".format(priv_path), err)
+            key["priv-ident"] = identifier.Ident(ident_s)
 
 
-        except FileNotFoundError as err:
-            raise err
+    except FileNotFoundError as err:
+        raise err
 
-        keys["role"] = key
-
-    if not keys.get("role"):
-        raise PolyVinylNotOk("Invalid", ident)
-
-    return keys["role"]
+    return key

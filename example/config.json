@@ -9,7 +9,7 @@
         "emails": "example/emails",
         "ui": "ui/",
         "ui-page": "ui/",
-        "auth-keys": "/basic/examples/keys/"
+        "auth-keys": "/basic/fixtures/"
     },
     "routes": {
         "/": ["redir=/auth/login", "end"],
@@ -107,7 +107,7 @@
     "brand": "Authdinger",
     "url": "http://localhost:3000",
     "smtp": "localhost",
-    "provider-key": "/basic/fixtures/bytes32.b64",
-    "auth-key": "/basic/fixtures/bytes32.b64",
+    "provider-key": "provider",
+    "auth-key": "auth",
     "cache": false
 }

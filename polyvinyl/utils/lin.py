@@ -4,6 +4,7 @@ from ..utils import identifier
 from ..utils.exception import PolyVinylError, PolyVinylNotOk
 from ..utils import config as config_d
 
+
 def quote(s):
     b = bytearray()
     for c in bytes(s, "utf-8"):
@@ -57,6 +58,18 @@ def send(stream, arr):
         stream.sendall(s)
     else:
         stream.write(s)
+
+def pack(arr):
+    s = bytearray() 
+    for seg in arr:
+        if isinstance(seg, str):
+            seg = bytes(seg, "utf-8")
+        s += len(seg).to_bytes(2, "big")
+        if isinstance(seg, str):
+            s += seg.encode("utf-8")
+        else:
+            s += seg
+    return bytes(s)
 
 
 def recv_rec(stream):
@@ -199,6 +212,49 @@ def map_str_r(stream, keys=None):
     return config_d.map_keys(keys, raw, {})
     
 
+def from_bytes(content: bytes) -> list:
+    pos = 0
+    total = len(content)
+    items = []
+
+    while pos < total:
+        length_s = content[pos:pos+2]
+        length = int.from_bytes(length_s, "big")
+
+        if length == 0:
+            break
+
+        it = content[pos:pos+length]
+        pos += length
+
+        if len(it) != length:
+            raise TypeError("content length mismatch", item)
+
+        items.append(it)
+
+    return items 
+
+
+def from_bytes(content: bytes) -> list:
+    pos = 0
+    total = len(content)
+    items = []
+
+    while pos < total:
+        length_s = content[pos:pos+2]
+        length = int.from_bytes(length_s, "big")
+
+        it = content[pos:pos+length]
+        pos += length
+
+        if len(it) != length:
+            raise TypeError("content length mismatch", item)
+
+        items.append(it)
+
+    return items 
+    
+
 def arr_to_dict(arr):
     data = {}
     for i in range(0, len(arr), 2):
@@ -208,11 +264,6 @@ def arr_to_dict(arr):
         data[arr[-1]] = True
 
     return data
-    
-
-def load_key(path):
-    with open(path, "rb") as f:
-        return base64.b64decode(f.read())
 
 
 def verify(key, items):

@@ -1,12 +1,16 @@
 import socket
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+
+from . import sign, enc
 from ..utils import lin
-from ..utils.exception import PolyVinylNotOk
+from ..utils.exception import PolyVinylNotOk, PolyVinylError
 
 ENC = "hmac-concat"
 
-
-class Incomplete:
-    pass
+Incomplete = b"in"
+Ok = b"ok"
+No = b"no"
 
 
 def cli_to_bool(ok: bytes):
@@ -19,17 +23,28 @@ def cli_to_bool(ok: bytes):
             return Incomplete 
 
 
-def query_path(path, key, details):
+def query_path(path, self_key, enc_key, details):
+    aim = "concat={}@{}".format(enc_key["sym-ident"].name, enc_key["sym-ident"].location)
+
+    sig = sign.arr_append_sig(self_key["priv-ident"], self_key, details)
+    details += ["end-sig", sig]
+
+    print("Details {}".format(details))
+
+    msg = enc.pack(enc_key, details)
+
+    print("Enc Details {}".format([b"aim", aim, msg, ""]))
+    exit(1)
+
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.connect(path) 
     except FileNotFoundError as err:
-        raise PolyVinylError(err.args[0], err)
+        raise PolyVinylError("Unable to connnect to socket {}".format(path), err)
 
-    sig = lin.get_sig(key, details)
-    details = [b"aim", ENC] + list(details) + ["end-sig", sig, ""] 
-    lin.send(sock, details)
+    lin.send(sock, [b"aim", aim, msg, ""])
     answer = lin.recv_rec(sock) 
+    sock.close()
 
     if len(answer):
         ok = cli_to_bool(oks)
@@ -37,7 +52,6 @@ def query_path(path, key, details):
     else:
         ok = False
 
-    sock.close()
     return ok, answer 
 
 

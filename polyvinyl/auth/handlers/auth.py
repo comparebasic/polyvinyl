@@ -24,6 +24,8 @@ def pw_auth(req, ident, data):
     if value != data["password-hash"]:
         raise PolyVinylNotOk("password mismatch")
 
+    return []
+
 
 def pw_set(req, ident, data):
     config = req.server.config
@@ -38,6 +40,8 @@ def pw_set(req, ident, data):
         f.seek(0, SEEK_END)
         details = ["password-hash", data["password-hash"]]
         lin.send_rec(f, details)
+
+    return []
 
 
 def register(req, ident, data):
@@ -56,3 +60,5 @@ def register(req, ident, data):
             "register-time", token.time_bytes(time.time())]
 
         lin.send_rec(f, details)
+
+    return []
