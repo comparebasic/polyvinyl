@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 
 from . import sign, enc
-from ..utils import lin
+from ..utils import lin, identifier
 from ..utils.exception import PolyVinylNotOk, PolyVinylError
 
 ENC = "hmac-concat"
@@ -40,13 +40,14 @@ def recv(stream, keys):
     obf = lin.recv_rec(stream)
     print("Obf {}".format(obf))
 
-    if obf.get(b"aim"):
-        aim = obf[b"aim"] 
+    if obf.get("aim"):
+        aim = obf["aim"] 
     else:
         raise PolyVinylError("Expected aim to be first item", obf)
 
     aim_ident = identifier.Ident(aim)
 
+    print(aim_ident)
     sign_key = keys[aim_ident.location]
     enc_key = keys[aim_ident.name]
 

@@ -72,7 +72,8 @@ def pack(arr):
     return bytes(s)
 
 
-def recv_rec(stream):
+def rec(stream):
+    "Read from persistant stream in reverse to create an object"
     key = None
     value = None
     data = {}
@@ -86,6 +87,35 @@ def recv_rec(stream):
             value = None
         else:
             value = item
+
+    return data
+
+
+def recv_rec(stream):
+    "Read forward from a stream in to create an object"
+    key = None
+    value = None
+    data = {}
+    while True:
+        item  = read_next(stream)
+        print(item)
+        if item is None:
+            break
+
+        if key:
+            value = item
+            try:
+                key = key.decode("utf-8")
+            except UnicodeDecodeError:
+                pass
+            data[key] = value 
+            key = None
+        else:
+            key = item
+
+    if key:
+        data["_payload"] = key
+
     return data
 
 
@@ -256,6 +286,7 @@ def from_bytes(content: bytes) -> list:
     
 
 def arr_to_dict(arr):
+    print("Arr {}".format(arr))
     data = {}
     for i in range(0, len(arr), 2):
         data[arr[i].decode("utf-8")] = arr[i+1]

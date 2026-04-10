@@ -12,7 +12,7 @@ from ..utils import identifier, lin
 class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
-        items = []
+        data = {} 
         content = b""
         try:
             data = cli.recv(self.rfile, self.server.keys)
@@ -21,7 +21,7 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
             self.server.logger.error("Error recv", err)
             return
 
-        if len(items) == 0:
+        if not data:
             lin.send(self.wfile, [b"no", b"no items recieved", b""])
 
         if data.get(b"ident"):
