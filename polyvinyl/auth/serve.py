@@ -14,88 +14,45 @@ class PolyVinylAuthHandler(socketserver.StreamRequestHandler):
     def handle(self):
         items = []
         content = b""
-        while True:
-            try:
-                content = lin.read_next(self.rfile)
-            except (ValueError, TypeError) as err:
-                self.respond("no", err.args[0], "")
-                return
-                
-            if content is None:
-                break
-
-            items.append(content)
+        try:
+            data = cli.recv(self.rfile, self.server.keys)
+        except (ValueError, TypeError) as err:
+            lin.send(self.wfile, [b"no", b""])
+            self.server.logger.error("Error recv", err)
+            return
 
         if len(items) == 0:
-            self.respond("no", "no items recieved", "")
+            lin.send(self.wfile, [b"no", b"no items recieved", b""])
 
-        if items[0] == b"aim":
-            self.auth(items)
+        if data.get(b"ident"):
+            self.auth(data)
         else:
             raise PolyVinylNotOk("Unknown Protocol", items[0])
 
 
-    def auth(self, items):
-        ident = identifier.Ident(items[1])
-        if ident.tag == "concat" and ident.name == "rsa-sha256":
-            key = self.server.keys.get(ident.location)
-            if not key:
-                raise PolyVinylNotOk("Unable find key", ident.location)
-
-            msg = bytearray()
-            for chunk in items[2:]:
-                msg += key["priv"].decrypt(
-                    chunk,
-                    padding.OAEP(
-                        mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                        algorithm=hashes.SHA256(),
-                        label=None
-                    )
-                )
-
-            print("Msg {}".format(msg))
-
-        if self.server.keys:
-            try:
-                lin.verify(self.server.keys, items)
-            except Exception as err:
-                self.server.logger.log("Invalid message details", err.args)
-                self.respond("no", "Invalid message details", "")
-                return
-
-        data = lin.arr_to_dict(items)
-        if not data.get("ident"):
-            raise PolyVinylNotOk("Ident not found")
-
-        ident = identifier.Ident(data["ident"].decode('utf-8'))
+    def auth(self, data):
+        self.server.logger.debug("Auth data {}".format(data))
+        ident = identifier.Ident(data.get(b"ident"))
+        
         try:
-            if not hasattr(handlers, ident.tag):
-                raise PolyVinylNotOk("Handler not found {}".format(ident.tag))
+            func = getattr(handlers, ident.tag)
+            self.server.logger.debug("Func {} Ident {} Data {}".format(ident.tag, ident, data))
+            resp = func(self, ident, data)
+        except PolyVinylNotOk:
+            raise
 
-            try:
-                func = getattr(handlers, ident.tag)
-                self.server.logger.debug("Func {} Ident {} Data {}".format(ident.tag, ident, data))
-                resp = func(self, ident, data)
-            except PolyVinylNotOk:
-                raise
-
-            self.server.logger.log("Auth run {}".format(ident.tag))
-            print("Resp {}".format(resp))
-            if resp is not None:
-                arr_append_sig(resp, self.keys["role"]["priv-ident"])
-                cli.respond(details)
-            else:
-                cli.respond("no", "")
-
-            return
-
-        except PolyVinylNotOk as err:
-            self.server.logger.log("Invalid login", err.args)
-            cli.respond("no", err.args[0], "")
-            return
-
-        self.server.logger.log("Noop")
-        cli.respond("no", "")
+        self.server.logger.log("Auth run {}".format(ident.tag))
+        print("Resp {}".format(resp))
+        if resp is not None:
+            arr_append_sig(resp, self.keys["auth"]["priv-ident"])
+            cli.send(
+                self.server.config["auth-sock"],
+                self.keys["auth-priv"],
+                self.keys["ayth-sym"],
+                details
+            )
+        else:
+            lin.send(self.wfile, [b"no", b""])
 
 
 class PolyVinylAuthServer(socketserver.UnixStreamServer):
@@ -110,7 +67,7 @@ class PolyVinylAuthServer(socketserver.UnixStreamServer):
 
     def load_keys(self):
         self.keys = { 
-            "role": sign.get_role_key(self.config, "role", "ed25519-sha256")
+            "auth": sign.get_role_key(self.config, "auth", "ed25519-sha256")
         }
         print(self.keys)
 

@@ -30,7 +30,7 @@ def unpack(key, obfused:bytes) -> list:
     decryptor = cipher.decryptor()
     content = decryptor.update(obfused) + decryptor.finalize()
     
-    return arr_to_dict(from_bytes(content))
+    return from_bytes(content)
 
 
 def get_key(config, name) -> bytes:

@@ -152,10 +152,11 @@ class PolyVinylProviderServer(HTTPServer):
         self.logger = logger
         self.handlers = handlers
         self.keys = {}
+        self.auth_ident = identifier.Ident("=auth@provider")
         if config.get("provider-key"):
             self.keys = {
                 "auth": sign.get_role_key(self.config, "auth", "ed25519-sha256"),
-                "self": sign.get_role_key(self.config, "provider", "ed25519-sha256")
+                "provider": sign.get_role_key(self.config, "provider", "ed25519-sha256")
             }
     
             self.keys["auth"].update(enc.get_key(config, "auth"))
@@ -163,12 +164,12 @@ class PolyVinylProviderServer(HTTPServer):
 
         if config.get("auth-socket"):
             details = [
-                "ident", "role_pubkey", "respond", self.keys["self"]["pub-ident"].ident
+                "ident", "role_pubkey", "respond", self.keys["provider"]["pub-ident"].ident
             ]
-            answer = cli.query_path(
+            answer = cli.send_recv(
                 config["auth-socket"],
-                self.keys["self"],  
-                self.keys["auth"],
+                self.auth_ident,
+                self.keys,
                 details)
             print("Answer {}".format(answer))
 

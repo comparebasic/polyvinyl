@@ -8,17 +8,7 @@ from ..utils.exception import PolyVinylNotOk
 
 
 def arr_append_sig(ident, key, items):
-    if ident.name == "hmac-sha256":
-        key = bytes.fromhex(ident.location)
-        h = hmac.new(key, b"", hashlib.sha256)
-        for v in items:
-            if isinstance(v, (str)):
-                v = v.encode("utf-8")
-            h.update(v)
-
-        return h.digest()
-
-    elif ident.name == "ed25519-sha256":
+    if ident.name == "ed25519-sha256":
         h = hashlib.sha256()
         for v in items:
             if isinstance(v, (str)):
@@ -27,6 +17,20 @@ def arr_append_sig(ident, key, items):
             h.update(v)
 
     return key["priv"].sign(h.digest())
+
+
+def arr_verify_sig(ident, key, items, sig):
+    if ident.name == "ed25519-sha256":
+        h = hashlib.sha256()
+        for v in items:
+            if v == "end-sign":
+                break
+            if isinstance(v, (str)):
+                v = v.encode("utf-8")
+
+            h.update(v)
+
+    return key["priv"].verify(sig, h.digest())
 
 
 def get_role_key(config, name, proto):
